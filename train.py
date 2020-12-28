@@ -1,5 +1,3 @@
-from fastspeech2 import train_fs2
-from fastspeech1 import train_fs
 import torch
 import argparse
 
@@ -7,8 +5,10 @@ device = torch.device('cuda'if torch.cuda.is_available()else 'cpu')
 
 def run(args):
     if args.model == 'FastSpeech2':
+        from fastspeech2 import train_fs2
         train_fs2.main(args, device)
     elif args.model == 'FastSpeech1':
+        from fastspeech1 import train_fs
         train_fs.main(args, device)
 
 
