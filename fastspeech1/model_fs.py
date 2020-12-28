@@ -28,7 +28,7 @@ class FastSpeech(nn.Module):
 
     def mask_tensor(self, mel_output, position, mel_max_length):
         lengths = torch.max(position, -1)[0]
-        mask = utils.get_mask_from_lengths(lengths, max_len=mel_max_length)
+        mask = ~utils.get_mask_from_lengths(lengths, max_len=mel_max_length)
         mask = mask.unsqueeze(-1).expand(-1, -1, mel_output.size(-1))
         return mel_output.masked_fill(mask, 0.)
 
