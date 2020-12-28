@@ -33,6 +33,9 @@ f0_max = 741.4
 energy_min = 0.0
 energy_max = 320.9
 
+decoder_layer = 4
+decoder_head = 2
+decoder_hidden = 256
 encoder_hidden = 256
 encoder_layer = 4
 fft_conv1d_filter_size = 1024
@@ -52,7 +55,7 @@ if model == 'FastSpeech1':
 
     decoder_dim = 256
     decoder_n_layer = 4
-    decoder_head = 2
+    # decoder_head = 2
     decoder_conv1d_filter_size = 1024
 
     fft_conv1d_kernel = (9, 1)
