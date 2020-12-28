@@ -37,6 +37,9 @@ encoder_hidden = 256
 encoder_layer = 4
 fft_conv1d_filter_size = 1024
 fft_conv1d_kernel_size = (9, 1)
+encoder_dropout = 0.2
+decoder_dropout = 0.2
+
 if model == 'FastSpeech1':
     # FastSpeech 1
     vocab_size = 300
