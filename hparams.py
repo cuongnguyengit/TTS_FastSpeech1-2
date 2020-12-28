@@ -1,8 +1,8 @@
 import os
 
 dataset = "vlsp2020"
-data_path = '/content/vlsp2020_01_fs1_gen_audio/'
-model = 'FastSpeech1'  # 'FastSpeech2'
+data_path = '/content/vlsp2020_01_fs2_gen_audio/'
+model = 'FastSpeech2'  # 'FastSpeech2'
 # Text
 text_cleaners = ['basic_cleaners']
 
