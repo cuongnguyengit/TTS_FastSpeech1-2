@@ -123,3 +123,5 @@ elif model == 'FastSpeech2':
     eval_size = 256
     log_step = 1000
     clear_Time = 20
+
+    n_bins = 256
