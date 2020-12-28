@@ -23,7 +23,7 @@ class Dataset(Dataset):
 
     def __getitem__(self, idx):
         basename = self.basename[idx]
-        phone = np.array(text_to_sequence(self.text[idx], []))
+        phone = np.array(text_to_sequence(self.text[idx].strip(), hparams.text_cleaners))
         mel_path = os.path.join(
             hparams.data_path, 'outdir', "mel", "{}-mel-{}.npy".format(hparams.dataset, basename))
         mel_target = np.load(mel_path)
