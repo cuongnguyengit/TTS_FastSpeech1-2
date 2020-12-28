@@ -101,7 +101,7 @@ elif model == 'FastSpeech2':
 
     # Optimizer
     batch_size = 16
-    epochs = 1000
+    epochs = 40
     n_warm_up_step = 4000
     grad_clip_thresh = 1.0
     acc_steps = 1
