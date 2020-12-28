@@ -24,7 +24,7 @@ def get_data_to_buffer():
     for i in tqdm(range(len(text))):
 
         mel_gt_name = os.path.join(
-            hparams.data_path, 'outdir', "vlsp2020-mel-%s.npy" % (basename[i]))
+            hparams.data_path, 'outdir', 'mel', "vlsp2020-mel-%s.npy" % (basename[i]))
         mel_gt_target = np.load(mel_gt_name)
         duration = np.load(os.path.join(
             hparams.data_path, 'outdir', "alignment", "{}-ali-{}.npy".format(hparams.dataset, basename[i])))
