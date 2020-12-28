@@ -33,6 +33,8 @@ f0_max = 741.4
 energy_min = 0.0
 energy_max = 320.9
 
+encoder_hidden = 256
+
 if model == 'FastSpeech1':
     # FastSpeech 1
     vocab_size = 300
@@ -74,7 +76,7 @@ elif model == 'FastSpeech2':
     # FastSpeech 2
     encoder_layer = 4
     encoder_head = 2
-    encoder_hidden = 256
+
     decoder_layer = 4
     decoder_head = 2
     decoder_hidden = 256
