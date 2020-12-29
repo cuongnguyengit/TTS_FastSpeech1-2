@@ -1,6 +1,7 @@
 import torch
 import argparse
 import hparams as hp
+import os
 device = torch.device('cuda'if torch.cuda.is_available()else 'cpu')
 
 def run(args):
