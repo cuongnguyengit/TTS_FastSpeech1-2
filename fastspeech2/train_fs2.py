@@ -22,6 +22,12 @@ import audio as Audio
 def main(args, device):
     torch.manual_seed(0)
 
+    hp.checkpoint_path = os.path.join(hp.root_path, args.name_task, "ckpt", hp.dataset)
+    hp.synth_path = os.path.join(hp.root_path, args.name_task, "synth", hp.dataset)
+    hp.eval_path = os.path.join(hp.root_path, args.name_task, "eval", hp.dataset)
+    hp.log_path = os.path.join(hp.root_path, args.name_task, "log", hp.dataset)
+    hp.test_path = os.path.join(hp.root_path, args.name_task, 'results')
+
     list_unuse = []
 
     # Get device
