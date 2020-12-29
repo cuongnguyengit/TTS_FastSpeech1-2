@@ -2,17 +2,17 @@ import os
 
 dataset = "vlsp2020"
 data_path = '/content/vlsp2020_01_fs2_gen_audio/'
-model = 'FastSpeech2'  # 'FastSpeech2'
+name_task = 'FastSpeech2'  # 'FastSpeech2'
 # Text
 text_cleaners = ['basic_cleaners']
 
 root_path = '/content/drive/MyDrive/voice_data/'
 
-checkpoint_path = os.path.join(root_path, model, "ckpt", dataset)
-synth_path = os.path.join(root_path, model, "synth", dataset)
-eval_path = os.path.join(root_path, model, "eval", dataset)
-log_path = os.path.join(root_path, model, "log", dataset)
-test_path = os.path.join(root_path, model, 'results')
+checkpoint_path = os.path.join(root_path, name_task, "ckpt", dataset)
+synth_path = os.path.join(root_path, name_task, "synth", dataset)
+eval_path = os.path.join(root_path, name_task, "eval", dataset)
+log_path = os.path.join(root_path, name_task, "log", dataset)
+test_path = os.path.join(root_path, name_task, 'results')
 
 # Audio and mel
 ### for VLSP2020 ###
