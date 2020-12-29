@@ -62,6 +62,7 @@ def main(args, device):
         print("\n---Model Restored at Step {}---\n".format(args.restore_step))
     except:
         print("\n---Start New Training---\n")
+        checkpoint_path = os.path.join(hp.checkpoint_path)
         if not os.path.exists(checkpoint_path):
             os.makedirs(checkpoint_path)
 
