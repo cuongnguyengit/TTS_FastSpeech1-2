@@ -26,6 +26,6 @@ if __name__ == "__main__":
     hp.data_path = args.data_path
     hp.name_task = args.name_task
     if not os.path.exists(os.path.join(hp.root_path, hp.name_task)):
-        os.makedirs(os.path.join(hp.root_path, hp.model))
+        os.makedirs(os.path.join(hp.root_path, hp.name_task))
 
     run(args)
