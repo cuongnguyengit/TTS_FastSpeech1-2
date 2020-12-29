@@ -53,7 +53,7 @@ def main(args, device):
     print("Optimizer and Loss Function Defined.")
 
     # Load checkpoint if exists
-    checkpoint_path = os.path.join(hp.checkpoint_path)
+    checkpoint_path = os.path.join(args.restore_path)
     try:
         checkpoint = torch.load(os.path.join(
             checkpoint_path, 'checkpoint_{}.pth.tar'.format(args.restore_step)))

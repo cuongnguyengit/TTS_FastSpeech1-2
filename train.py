@@ -17,6 +17,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--restore_step', type=int, default=0)
+    parser.add_argument('--restore_path', type=str, default='')
     parser.add_argument('--model', type=str, default='FastSpeech2')
     parser.add_argument('--name_task', type=str, default='FastSpeech2')
     parser.add_argument('--data_path', type=str, default='/content/vlsp2020_01_fs2_gen_audio/')
