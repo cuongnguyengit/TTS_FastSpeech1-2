@@ -3,6 +3,7 @@ import os
 dataset = "vlsp2020"
 data_path = '/content/vlsp2020_01_fs2_gen_audio/'
 name_task = 'FastSpeech2'  # 'FastSpeech2'
+waveglow_path = '/content/drive/MyDrive/voice_data/waveglow_78000'
 # Text
 text_cleaners = ['basic_cleaners']
 

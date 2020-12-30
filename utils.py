@@ -114,13 +114,19 @@ def plot_data(data, titles=None, filename=None):
 
 
 def get_waveglow():
-    waveglow = torch.hub.load(
-        'nvidia/DeepLearningExamples:torchhub', 'nvidia_waveglow')
-    waveglow = waveglow.remove_weightnorm(waveglow)
-    waveglow.eval()
-    for m in waveglow.modules():
-        if 'Conv' in str(type(m)):
-            setattr(m, 'padding_mode', 'zeros')
+    if os.path.exists(hp.waveglow_path):
+        waveglow = torch.load(hp.waveglow_path)['model']
+        waveglow.eval()
+        for k in waveglow.convinv:
+            k.float()
+    else:
+        waveglow = torch.hub.load(
+            'nvidia/DeepLearningExamples:torchhub', 'nvidia_waveglow')
+        waveglow = waveglow.remove_weightnorm(waveglow)
+        waveglow.eval()
+        for m in waveglow.modules():
+            if 'Conv' in str(type(m)):
+                setattr(m, 'padding_mode', 'zeros')
     waveglow.to(device)
 
     return waveglow
