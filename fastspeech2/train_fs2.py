@@ -18,6 +18,7 @@ import hparams as hp
 import utils
 import audio as Audio
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def main(args, device):
     torch.manual_seed(0)
@@ -165,14 +166,17 @@ def main(args, device):
                 if current_step % hp.log_step == 0:
                     Now = time.perf_counter()
 
-                    str1 = "Epoch [{}/{}], Step [{}/{}]:".format(
+                    str0 = 'Training:'
+
+                    str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
                         epoch+1, hp.epochs, current_step, total_step)
-                    str2 = "Total Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
+                    str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
                         t_l, m_l, m_p_l, d_l, f_l, e_l)
-                    str3 = "Time Used: {:.3f}s, Estimated Time Remaining: {:.3f}s.".format(
+                    str3 = "\tTime Used: {:.3f}s, Estimated Time Remaining: {:.3f}s.".format(
                         (Now-Start), (total_step-current_step)*np.mean(Time))
 
-                    print("\n" + str1)
+                    print("\n" + str0)
+                    print(str1)
                     print(str2)
                     print(str3)
 
@@ -182,16 +186,16 @@ def main(args, device):
                         f_log.write(str3 + "\n")
                         f_log.write("\n")
 
-                    train_logger.add_scalar(
-                        'Loss/total_loss', t_l, current_step)
-                    train_logger.add_scalar('Loss/mel_loss', m_l, current_step)
-                    train_logger.add_scalar(
-                        'Loss/mel_postnet_loss', m_p_l, current_step)
-                    train_logger.add_scalar(
-                        'Loss/duration_loss', d_l, current_step)
-                    train_logger.add_scalar('Loss/F0_loss', f_l, current_step)
-                    train_logger.add_scalar(
-                        'Loss/energy_loss', e_l, current_step)
+                    # train_logger.add_scalar(
+                    #     'Loss/total_loss', t_l, current_step)
+                    # train_logger.add_scalar('Loss/mel_loss', m_l, current_step)
+                    # train_logger.add_scalar(
+                    #     'Loss/mel_postnet_loss', m_p_l, current_step)
+                    # train_logger.add_scalar(
+                    #     'Loss/duration_loss', d_l, current_step)
+                    # train_logger.add_scalar('Loss/F0_loss', f_l, current_step)
+                    # train_logger.add_scalar(
+                    #     'Loss/energy_loss', e_l, current_step)
 
                 if current_step % hp.save_step == 0:
                     torch.save({'model': model.state_dict(), 'optimizer': optimizer.state_dict(
@@ -202,19 +206,19 @@ def main(args, device):
                     length = mel_len[0].item()
                     mel_target_torch = mel_target[0, :length].detach(
                     ).unsqueeze(0).transpose(1, 2)
-                    mel_target = mel_target[0, :length].detach(
-                    ).cpu().transpose(0, 1)
+                    # mel_target = mel_target[0, :length].detach(
+                    # ).cpu().transpose(0, 1)
                     mel_torch = mel_output[0, :length].detach(
                     ).unsqueeze(0).transpose(1, 2)
-                    mel = mel_output[0, :length].detach().cpu().transpose(0, 1)
+                    # mel = mel_output[0, :length].detach().cpu().transpose(0, 1)
                     mel_postnet_torch = mel_postnet_output[0, :length].detach(
                     ).unsqueeze(0).transpose(1, 2)
                     mel_postnet = mel_postnet_output[0, :length].detach(
                     ).cpu().transpose(0, 1)
-                    Audio.tools.inv_mel_spec(mel, os.path.join(
-                        synth_path, "step_{}_griffin_lim.wav".format(current_step)))
-                    Audio.tools.inv_mel_spec(mel_postnet, os.path.join(
-                        synth_path, "step_{}_postnet_griffin_lim.wav".format(current_step)))
+                    # Audio.tools.inv_mel_spec(mel, os.path.join(
+                    #     synth_path, "step_{}_griffin_lim.wav".format(current_step)))
+                    # Audio.tools.inv_mel_spec(mel_postnet, os.path.join(
+                    #     synth_path, "step_{}_postnet_griffin_lim.wav".format(current_step)))
 
                     if hp.vocoder == 'waveglow':
                         utils.waveglow_infer(mel_torch, waveglow, os.path.join(
@@ -224,14 +228,14 @@ def main(args, device):
                         utils.waveglow_infer(mel_target_torch, waveglow, os.path.join(
                             hp.synth_path, 'step_{}_ground-truth_{}.wav'.format(current_step, hp.vocoder)))
 
-                    f0 = f0[0, :length].detach().cpu().numpy()
-                    energy = energy[0, :length].detach().cpu().numpy()
-                    f0_output = f0_output[0, :length].detach().cpu().numpy()
-                    energy_output = energy_output[0,
-                                                  :length].detach().cpu().numpy()
-
-                    utils.plot_data([(mel_postnet.numpy(), f0_output, energy_output), (mel_target.numpy(), f0, energy)],
-                                    ['Synthetized Spectrogram', 'Ground-Truth Spectrogram'], filename=os.path.join(synth_path, 'step_{}.png'.format(current_step)))
+                    # f0 = f0[0, :length].detach().cpu().numpy()
+                    # energy = energy[0, :length].detach().cpu().numpy()
+                    # f0_output = f0_output[0, :length].detach().cpu().numpy()
+                    # energy_output = energy_output[0,
+                    #                               :length].detach().cpu().numpy()
+                    #
+                    # utils.plot_data([(mel_postnet.numpy(), f0_output, energy_output), (mel_target.numpy(), f0, energy)],
+                    #                 ['Synthetized Spectrogram', 'Ground-Truth Spectrogram'], filename=os.path.join(synth_path, 'step_{}.png'.format(current_step)))
 
                 end_time = time.perf_counter()
                 Time = np.append(Time, end_time - start_time)
@@ -241,6 +245,21 @@ def main(args, device):
                         Time, [i for i in range(len(Time))], axis=None)
                     Time = np.append(Time, temp_value)
 
+                if current_step % hp.eval_step == 0:
+                    model.eval()
+                    with torch.no_grad():
+                        d_l, f_l, e_l, m_l, m_p_l = evaluate(
+                            model, current_step)
+                        t_l = d_l + f_l + e_l + m_l + m_p_l
+                        str0 = 'Validate'
+                        str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
+                            epoch + 1, hp.epochs, current_step, total_step)
+                        str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
+                            t_l, m_l, m_p_l, d_l, f_l, e_l)
+                        print(str0)
+                        print(str1)
+                        print(str2)
+                    model.train()
 
 if __name__ == "__main__":
 
@@ -248,4 +267,4 @@ if __name__ == "__main__":
     parser.add_argument('--restore_step', type=int, default=0)
     args = parser.parse_args()
 
-    main(args)
+    main(args, device)

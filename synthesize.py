@@ -19,6 +19,7 @@ def preprocess(text):
     print('Text', text)
     sequence = np.array(text_to_sequence(text, ['basic_cleaners']))
     print(sequence_to_text(sequence))
+    print(sequence)
     sequence = np.stack([sequence])
     return torch.from_numpy(sequence).long().to(device)
 
@@ -64,18 +65,21 @@ if __name__ == "__main__":
     parser.add_argument('--step', type=int, default=300000)
     parser.add_argument('--checkpoint_path', type=str, default='')
     parser.add_argument('--test_path', type=str, default='')
+    parser.add_argument('--sentence', type=str, default='xin chào các bạn .')
     parser.add_argument('--duration_control', type=float, default=1.0)
     parser.add_argument('--pitch_control', type=float, default=1.0)
     parser.add_argument('--energy_control', type=float, default=1.0)
+
     args = parser.parse_args()
 
-    sentences = [
-        # "in being comparatively modern.",
-        "thế từ chỗ này không nhìn thấy cầu à",
-        'bệnh viêm phổi lạ khởi phát từ vũ hán , trung quốc , sau được xác định là cô vít mười chín , không chỉ khiến'
-        ' trung quốc phong tỏa hơn sáu mươi triệu dân mà nó cũng nhanh chóng trở thành đại dịch toàn cầu , '
-        'khiến hơn bảy tư triệu người mắc bệnh , trong đó hơn một phẩy sáu triệu người tử vong'
-    ]
+    # sentences = [
+    #     # "in being comparatively modern.",
+    #     "thế từ chỗ này không nhìn thấy cầu à",
+    #     'bệnh viêm phổi lạ khởi phát từ vũ hán , trung quốc , sau được xác định là cô vít mười chín , không chỉ khiến'
+    #     ' trung quốc phong tỏa hơn sáu mươi triệu dân mà nó cũng nhanh chóng trở thành đại dịch toàn cầu , '
+    #     'khiến hơn bảy tư triệu người mắc bệnh , trong đó hơn một phẩy sáu triệu người tử vong'
+    # ]
+    sentences = [args.sentence]
 
     model = get_FastSpeech2(args).to(device)
     waveglow = utils.get_waveglow()

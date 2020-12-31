@@ -118,9 +118,9 @@ vocoder = 'waveglow'  # 'waveglow' or 'melgan'
 log_offset = 1.
 
 # Save, log and synthesis
-save_step = 10000
-synth_step = 1000
-eval_step = 1000
+save_step = 20000
+synth_step = 10000
+eval_step = 10000
 eval_size = 256
 log_step = 1000
 clear_Time = 20
