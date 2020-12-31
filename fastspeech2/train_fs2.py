@@ -11,6 +11,7 @@ import time
 
 from dataset.dataset_fs2 import Dataset
 from fastspeech2.model_fs2 import FastSpeech2
+from fastspeech2.evaluate_fs2 import evaluate
 from fastspeech2.loss_fs2 import FastSpeech2Loss
 from fastspeech2.optimizer_fs2 import ScheduledOptim
 
