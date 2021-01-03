@@ -61,7 +61,7 @@ def process_meta(meta_path, list_unuse=[]):
         text = []
         name = []
         for line in f.readlines():
-            print(line)
+            # print(line)
             n, t = line.strip('\n').split('|')
 
             name.append(n)
