@@ -30,9 +30,9 @@ mel_fmax = 8000.0
 # Quantization for F0 and energy
 ### for VLSP2020 ###
 f0_min = 71.0
-f0_max = 741.4
+f0_max = 786.6
 energy_min = 0.0
-energy_max = 320.9
+energy_max = 321.4
 
 decoder_layer = 4
 decoder_head = 2
