@@ -114,10 +114,11 @@ def process_utterance(in_dir, out_dir, basename):
     # Get alignments
     textgrid = tgt.io.read_textgrid(tg_path)
     phone, duration, start, end = get_alignment(textgrid.get_tier_by_name('phones'))
-    text = '{' + '}{'.join([i for i in phone if len(i) >= 1]) + '}'  # '{A}{B}{$}{C}', $ represents silent phones
+    phone = [i for i in phone if len(i) >= 1]
+    text = '{' + '}{'.join(phone) + '}'  # '{A}{B}{$}{C}', $ represents silent phones
     text = text.replace('{$}', ' ')  # '{A}{B} {C}'
     text = text.replace('}{', ' ')  # '{A B} {C}'
-    duration = duration[:len(text)]
+    duration = duration[:len(phone)]
 
     if start >= end:
         return None
