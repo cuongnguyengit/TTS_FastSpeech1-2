@@ -13,7 +13,7 @@ def write_metadata(train, val, out_dir):
 
 
 def main():
-    in_dir = hp.data_path + 'indir/'
+    in_dir = hp.data_path + 'wavs/'
     out_dir = hp.data_path + 'outdir/'
     mel_out_dir = os.path.join(out_dir, "mel")
     if not os.path.exists(mel_out_dir):
