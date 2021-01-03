@@ -72,22 +72,22 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # sentences = [
-    #     # "in being comparatively modern.",
-    #     "thế từ chỗ này không nhìn thấy cầu à",
-    #     'bệnh viêm phổi lạ khởi phát từ vũ hán , trung quốc , sau được xác định là cô vít mười chín , không chỉ khiến'
-    #     ' trung quốc phong tỏa hơn sáu mươi triệu dân mà nó cũng nhanh chóng trở thành đại dịch toàn cầu , '
-    #     'khiến hơn bảy tư triệu người mắc bệnh , trong đó hơn một phẩy sáu triệu người tử vong'
-    # ]
-    # sentences = [args.sentence]
-    #
-    # model = get_FastSpeech2(args).to(device)
-    # waveglow = utils.get_waveglow()
-    # with torch.no_grad():
-    #     for sentence in sentences:
-    #         text = preprocess(sentence)
-    #         print(text.shape)
-    #         synthesize(model, waveglow, text, sentence, 'step_{}'.format(
-    #             args.step), args.duration_control, args.pitch_control, args.energy_control)
+    sentences = [
+        "{o2_T1 l e2_T1 sp k o1_T3 t ie2_T3 ng ng uoi3_T2 sp n oi_T3}",
+        # "thế từ chỗ này không nhìn thấy cầu à",
+        # 'bệnh viêm phổi lạ khởi phát từ vũ hán , trung quốc , sau được xác định là cô vít mười chín , không chỉ khiến'
+        # ' trung quốc phong tỏa hơn sáu mươi triệu dân mà nó cũng nhanh chóng trở thành đại dịch toàn cầu , '
+        # 'khiến hơn bảy tư triệu người mắc bệnh , trong đó hơn một phẩy sáu triệu người tử vong'
+    ]
+    sentences.append(args.sentence)
 
-    print(text_to_sequence('{o2_T1 l e2_T1 sp k o1_T3 t ie2_T3 ng ng uoi3_T2 sp n oi_T3}', ['basic_cleaners']))
+    model = get_FastSpeech2(args).to(device)
+    waveglow = utils.get_waveglow()
+    with torch.no_grad():
+        for sentence in sentences:
+            text = preprocess(sentence)
+            print(text.shape)
+            synthesize(model, waveglow, text, sentence, 'step_{}'.format(
+                args.step), args.duration_control, args.pitch_control, args.energy_control)
+
+    # print(text_to_sequence('{o2_T1 l e2_T1 sp k o1_T3 t ie2_T3 ng ng uoi3_T2 sp n oi_T3}', ['basic_cleaners']))
