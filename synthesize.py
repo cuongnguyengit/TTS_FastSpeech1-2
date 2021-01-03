@@ -17,7 +17,7 @@ print(device)
 def preprocess(text):
     # text = text.rstrip(punctuation)
     print('Text', text)
-    sequence = np.array(text_to_sequence(text, []))
+    sequence = np.array(text_to_sequence(text, hp.text_cleaners))
     print(sequence_to_text(sequence))
     print(sequence)
     sequence = np.stack([sequence])
