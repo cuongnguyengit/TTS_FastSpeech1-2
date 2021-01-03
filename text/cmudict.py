@@ -43,7 +43,7 @@ valid_symbols = ['a1_T1', 'a1_T2', 'a1_T3', 'a1_T4', 'a1_T5', 'a1_T6', 'a2_T1',
                  'uoi2_T1', 'uoi2_T3', 'uoi2_T4', 'uoi2_T5', 'uoi2_T6', 'uoi3_T1',
                  'uoi3_T2', 'uoi3_T3', 'uoi3_T4', 'uoi3_T5', 'uou_T6', 'uu2_T1',
                  'uu2_T2', 'uu2_T3', 'uu2_T4', 'uu2_T5', 'uu2_T6', 'uy_T1', 'uy_T2',
-                 'uy_T3', 'uy_T4', 'uy_T5', 'uy_T6', 'v', 'x', 'sp']
+                 'uy_T3', 'uy_T4', 'uy_T5', 'uy_T6', 'v', 'x']
 
 _valid_symbol_set = set(valid_symbols)
 
