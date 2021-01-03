@@ -117,6 +117,7 @@ def process_utterance(in_dir, out_dir, basename):
     text = '{' + '}{'.join([i for i in phone if len(i) >= 1]) + '}'  # '{A}{B}{$}{C}', $ represents silent phones
     text = text.replace('{$}', ' ')  # '{A}{B} {C}'
     text = text.replace('}{', ' ')  # '{A B} {C}'
+    duration = duration[:len(text)]
 
     if start >= end:
         return None
