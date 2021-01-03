@@ -79,13 +79,15 @@ if __name__ == "__main__":
     #     ' trung quốc phong tỏa hơn sáu mươi triệu dân mà nó cũng nhanh chóng trở thành đại dịch toàn cầu , '
     #     'khiến hơn bảy tư triệu người mắc bệnh , trong đó hơn một phẩy sáu triệu người tử vong'
     # ]
-    sentences = [args.sentence]
+    # sentences = [args.sentence]
+    #
+    # model = get_FastSpeech2(args).to(device)
+    # waveglow = utils.get_waveglow()
+    # with torch.no_grad():
+    #     for sentence in sentences:
+    #         text = preprocess(sentence)
+    #         print(text.shape)
+    #         synthesize(model, waveglow, text, sentence, 'step_{}'.format(
+    #             args.step), args.duration_control, args.pitch_control, args.energy_control)
 
-    model = get_FastSpeech2(args).to(device)
-    waveglow = utils.get_waveglow()
-    with torch.no_grad():
-        for sentence in sentences:
-            text = preprocess(sentence)
-            print(text.shape)
-            synthesize(model, waveglow, text, sentence, 'step_{}'.format(
-                args.step), args.duration_control, args.pitch_control, args.energy_control)
+    print(text_to_sequence('{o2_T1 l e2_T1 sp k o1_T3 t ie2_T3 ng ng uoi3_T2 sp n oi_T3}', ['basic_cleaners']))
