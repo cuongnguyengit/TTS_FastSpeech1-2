@@ -122,16 +122,16 @@ def main(args, device):
                 m_p_l = mel_postnet_loss.item()
                 d_l = duration_loss.item()
 
-                with open(os.path.join("logger", "total_loss.txt"), "a") as f_total_loss:
+                with open(os.path.join(hp.log_path, "total_loss.txt"), "a") as f_total_loss:
                     f_total_loss.write(str(t_l)+"\n")
 
-                with open(os.path.join("logger", "mel_loss.txt"), "a") as f_mel_loss:
+                with open(os.path.join(hp.log_path, "mel_loss.txt"), "a") as f_mel_loss:
                     f_mel_loss.write(str(m_l)+"\n")
 
-                with open(os.path.join("logger", "mel_postnet_loss.txt"), "a") as f_mel_postnet_loss:
+                with open(os.path.join(hp.log_path, "mel_postnet_loss.txt"), "a") as f_mel_postnet_loss:
                     f_mel_postnet_loss.write(str(m_p_l)+"\n")
 
-                with open(os.path.join("logger", "duration_loss.txt"), "a") as f_d_loss:
+                with open(os.path.join(hp.log_path, "duration_loss.txt"), "a") as f_d_loss:
                     f_d_loss.write(str(d_l)+"\n")
 
                 # Backward
