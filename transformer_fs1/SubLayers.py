@@ -4,6 +4,7 @@ import numpy as np
 
 from transformer_fs1.Modules import ScaledDotProductAttention
 import hparams as hp
+from fastspeech1 import hp_fs1 as hp1
 
 
 class MultiHeadAttention(nn.Module):
@@ -78,10 +79,10 @@ class PositionwiseFeedForward(nn.Module):
         # Use Conv1D
         # position-wise
         self.w_1 = nn.Conv1d(
-            d_in, d_hid, kernel_size=hp.fft_conv1d_kernel[0], padding=hp.fft_conv1d_padding[0])
+            d_in, d_hid, kernel_size=hp1.fft_conv1d_kernel[0], padding=hp1.fft_conv1d_padding[0])
         # position-wise
         self.w_2 = nn.Conv1d(
-            d_hid, d_in, kernel_size=hp.fft_conv1d_kernel[1], padding=hp.fft_conv1d_padding[1])
+            d_hid, d_in, kernel_size=hp1.fft_conv1d_kernel[1], padding=hp1.fft_conv1d_padding[1])
 
         self.layer_norm = nn.LayerNorm(d_in)
         self.dropout = nn.Dropout(dropout)
