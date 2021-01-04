@@ -184,7 +184,7 @@ def main(args, device):
                     str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
                         t_l, m_l, m_p_l, d_l, f_l, e_l)
                     str3 = "Current Learning Rate is {:.6f}.".format(
-                        scheduled_optim.get_learning_rate())
+                        scheduled_optim.get_lr())
                     str4 = "\tTime Used: {:.3f}s, Estimated Time Remaining: {:.3f}s.".format(
                         (Now-Start), (total_step-current_step)*np.mean(Time))
 
