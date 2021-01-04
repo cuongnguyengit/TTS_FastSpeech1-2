@@ -14,10 +14,12 @@ from fastspeech2.model_fs2 import FastSpeech2
 from fastspeech2.evaluate_fs2 import evaluate
 from fastspeech2.loss_fs2 import FastSpeech2Loss
 from fastspeech2.optimizer_fs2 import ScheduledOptim
+from fastspeech2 import hp_fs2 as hp2
 
 import hparams as hp
+
 import utils
-import audio as Audio
+# import audio as Audio
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -48,9 +50,9 @@ def main(args, device):
 
     # Optimizer and loss
     optimizer = torch.optim.Adam(
-        model.parameters(), betas=hp.betas, eps=hp.eps, weight_decay=hp.weight_decay)
+        model.parameters(), betas=hp2.betas, eps=hp2.eps, weight_decay=hp2.weight_decay)
     scheduled_optim = ScheduledOptim(
-        optimizer, hp.decoder_hidden, hp.n_warm_up_step, args.restore_step)
+        optimizer, hp2.decoder_hidden, hp2.n_warm_up_step, args.restore_step)
     # Optimizer and loss)
 
 
@@ -156,14 +158,14 @@ def main(args, device):
                     f_e_loss.write(str(e_l)+"\n")
 
                 # Backward
-                total_loss = total_loss / hp.acc_steps
+                total_loss = total_loss / hp2.acc_steps
                 total_loss.backward()
-                if current_step % hp.acc_steps != 0:
+                if current_step % hp2.acc_steps != 0:
                     continue
 
                 # Clipping gradients to avoid gradient explosion
                 nn.utils.clip_grad_norm_(
-                    model.parameters(), hp.grad_clip_thresh)
+                    model.parameters(), hp2.grad_clip_thresh)
 
                 # Update weights
                 if args.frozen_learning_rate:
@@ -183,8 +185,8 @@ def main(args, device):
                         epoch+1, hp.epochs, current_step, total_step)
                     str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
                         t_l, m_l, m_p_l, d_l, f_l, e_l)
-                    str3 = "Current Learning Rate is {:.6f}.".format(
-                        scheduled_optim.get_lr())
+                    str3 = "\tCurrent Learning Rate is {:.6f}.".format(
+                        scheduled_optim.get_learning_rate())
                     str4 = "\tTime Used: {:.3f}s, Estimated Time Remaining: {:.3f}s.".format(
                         (Now-Start), (total_step-current_step)*np.mean(Time))
 

@@ -7,7 +7,7 @@ from numba import jit
 import numpy as np
 import copy
 import math
-
+from fastspeech1 import hp_fs1 as hp1
 import hparams as hp
 import utils
 
@@ -97,11 +97,11 @@ class DurationPredictor(nn.Module):
     def __init__(self):
         super(DurationPredictor, self).__init__()
 
-        self.input_size = hp.encoder_dim
-        self.filter_size = hp.duration_predictor_filter_size
-        self.kernel = hp.duration_predictor_kernel_size
-        self.conv_output_size = hp.duration_predictor_filter_size
-        self.dropout = hp.dropout
+        self.input_size = hp1.encoder_dim
+        self.filter_size = hp1.duration_predictor_filter_size
+        self.kernel = hp1.duration_predictor_kernel_size
+        self.conv_output_size = hp1.duration_predictor_filter_size
+        self.dropout = hp1.dropout
 
         self.conv_layer = nn.Sequential(OrderedDict([
             ("conv1d_1", Conv(self.input_size,

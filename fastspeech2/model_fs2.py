@@ -7,6 +7,7 @@ from transformer_fs2.Layers import PostNet
 from fastspeech2.modules_fs2 import VarianceAdaptor
 from utils import get_mask_from_lengths
 import hparams as hp
+from fastspeech2 import hp_fs2 as hp2
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -21,7 +22,7 @@ class FastSpeech2(nn.Module):
         self.variance_adaptor = VarianceAdaptor()
 
         self.decoder = Decoder()
-        self.mel_linear = nn.Linear(hp.decoder_hidden, hp.n_mel_channels)
+        self.mel_linear = nn.Linear(hp2.decoder_hidden, hp.n_mel_channels)
 
         self.use_postnet = use_postnet
         if self.use_postnet:

@@ -11,6 +11,8 @@ from fastspeech1.loss_fs import DNNLoss
 from dataset.dataset_fs import BufferDataset
 from dataset.dataset_fs import get_data_to_buffer, collate_fn_tensor
 from fastspeech1.optimizer_fs import ScheduledOptim
+from fastspeech1 import hp_fs1 as hp1
+
 import hparams as hp
 import utils
 
@@ -31,8 +33,8 @@ def main(args, device):
                                  betas=(0.9, 0.98),
                                  eps=1e-9)
     scheduled_optim = ScheduledOptim(optimizer,
-                                     hp.decoder_dim,
-                                     hp.n_warm_up_step,
+                                     hp1.decoder_dim,
+                                     hp1.n_warm_up_step,
                                      args.restore_step)
     fastspeech_loss = DNNLoss().to(device)
     print("Defined Optimizer and Loss Function.")
@@ -130,7 +132,7 @@ def main(args, device):
 
                 # Clipping gradients to avoid gradient explosion
                 nn.utils.clip_grad_norm_(
-                    model.parameters(), hp.grad_clip_thresh)
+                    model.parameters(), hp1.grad_clip_thresh)
 
                 # Update weights
                 if args.frozen_learning_rate:

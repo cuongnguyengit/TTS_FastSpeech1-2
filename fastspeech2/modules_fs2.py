@@ -8,6 +8,7 @@ import copy
 import math
 
 import hparams as hp
+from fastspeech2 import hp_fs2 as hp2
 import utils
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -31,8 +32,8 @@ class VarianceAdaptor(nn.Module):
             np.log(hp.f0_min), np.log(hp.f0_max), hp.n_bins-1)), requires_grad=False)
         self.energy_bins = nn.Parameter(torch.linspace(
             hp.energy_min, hp.energy_max, hp.n_bins-1), requires_grad=False)
-        self.pitch_embedding = nn.Embedding(hp.n_bins, hp.encoder_hidden)
-        self.energy_embedding = nn.Embedding(hp.n_bins, hp.encoder_hidden)
+        self.pitch_embedding = nn.Embedding(hp.n_bins, hp2.encoder_hidden)
+        self.energy_embedding = nn.Embedding(hp.n_bins, hp2.encoder_hidden)
 
     def forward(self, x, src_mask, mel_mask=None, duration_target=None, pitch_target=None, energy_target=None, max_len=None, d_control=1.0, p_control=1.0, e_control=1.0):
 
@@ -110,11 +111,11 @@ class VariancePredictor(nn.Module):
     def __init__(self):
         super(VariancePredictor, self).__init__()
 
-        self.input_size = hp.encoder_hidden
-        self.filter_size = hp.variance_predictor_filter_size
-        self.kernel = hp.variance_predictor_kernel_size
-        self.conv_output_size = hp.variance_predictor_filter_size
-        self.dropout = hp.variance_predictor_dropout
+        self.input_size = hp2.encoder_hidden
+        self.filter_size = hp2.variance_predictor_filter_size
+        self.kernel = hp2.variance_predictor_kernel_size
+        self.conv_output_size = hp2.variance_predictor_filter_size
+        self.dropout = hp2.variance_predictor_dropout
 
         self.conv_layer = nn.Sequential(OrderedDict([
             ("conv1d_1", Conv(self.input_size,

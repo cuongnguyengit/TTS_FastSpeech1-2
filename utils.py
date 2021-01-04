@@ -137,7 +137,7 @@ def get_waveglow():
 
 def waveglow_infer(mel, waveglow, path):
     with torch.no_grad():
-        wav = waveglow.infer(mel, sigma=1.0)
+        wav = waveglow.infer(mel.half(), sigma=1.0)
     audio = IPython.display.Audio(wav.cpu().numpy(), rate=hp.sampling_rate)
     audio = AudioSegment(audio.data, frame_rate=hp.sampling_rate, sample_width=2, channels=1)
     audio.export(path, format="wav")

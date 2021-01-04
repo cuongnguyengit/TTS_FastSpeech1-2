@@ -6,7 +6,7 @@ import utils
 from transformer_fs1.Models import Encoder, Decoder
 from transformer_fs1.Layers import Linear, PostNet
 from fastspeech1.modules_fs import LengthRegulator, CBHG
-
+from fastspeech1 import hp_fs1 as hp1
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -21,7 +21,7 @@ class FastSpeech(nn.Module):
         self.length_regulator = LengthRegulator()
         self.decoder = Decoder()
 
-        self.mel_linear = Linear(hp.decoder_dim, hp.n_mel_channels)
+        self.mel_linear = Linear(hp1.decoder_dim, hp.n_mel_channels)
         self.postnet = CBHG(hp.n_mel_channels, K=8,
                             projections=[256, hp.n_mel_channels])
         self.last_linear = Linear(hp.n_mel_channels * 2, hp.n_mel_channels)
