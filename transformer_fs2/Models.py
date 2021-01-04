@@ -6,6 +6,7 @@ import transformer_fs2.Constants as Constants
 from transformer_fs2.Layers import FFTBlock
 from text.symbols import symbols
 import hparams as hp
+from fastspeech2 import hp_fs2 as hp2
 
 
 def get_sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
@@ -36,14 +37,14 @@ class Encoder(nn.Module):
     def __init__(self,
                  n_src_vocab=len(symbols)+1,
                  len_max_seq=hp.max_seq_len,
-                 d_word_vec=hp.encoder_hidden,
-                 n_layers=hp.encoder_layer,
-                 n_head=hp.encoder_head,
-                 d_k=hp.encoder_hidden // hp.encoder_head,
-                 d_v=hp.encoder_hidden // hp.encoder_head,
-                 d_model=hp.encoder_hidden,
-                 d_inner=hp.fft_conv1d_filter_size,
-                 dropout=hp.encoder_dropout):
+                 d_word_vec=hp2.encoder_hidden,
+                 n_layers=hp2.encoder_layer,
+                 n_head=hp2.encoder_head,
+                 d_k=hp2.encoder_hidden // hp2.encoder_head,
+                 d_v=hp2.encoder_hidden // hp2.encoder_head,
+                 d_model=hp2.encoder_hidden,
+                 d_inner=hp2.fft_conv1d_filter_size,
+                 dropout=hp2.encoder_dropout):
 
         super(Encoder, self).__init__()
 

@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 import hparams as hp
+from fastspeech1 import hp_fs1 as hp1
+from text.symbols import symbols
 
 import transformer_fs1.Constants as Constants
 from transformer_fs1.Layers import FFTBlock, PreNet, PostNet, Linear
@@ -50,16 +52,16 @@ class Encoder(nn.Module):
     ''' Encoder '''
 
     def __init__(self,
-                 n_src_vocab=hp.vocab_size,
-                 len_max_seq=hp.vocab_size,
-                 d_word_vec=hp.encoder_dim,
-                 n_layers=hp.encoder_n_layer,
-                 n_head=hp.encoder_head,
-                 d_k=hp.encoder_dim // hp.encoder_head,
-                 d_v=hp.encoder_dim // hp.encoder_head,
-                 d_model=hp.encoder_dim,
-                 d_inner=hp.encoder_conv1d_filter_size,
-                 dropout=hp.dropout):
+                 n_src_vocab=len(symbols)+1,
+                 len_max_seq=hp.max_seq_len,
+                 d_word_vec=hp1.encoder_dim,
+                 n_layers=hp1.encoder_n_layer,
+                 n_head=hp1.encoder_head,
+                 d_k=hp1.encoder_dim // hp1.encoder_head,
+                 d_v=hp1.encoder_dim // hp1.encoder_head,
+                 d_model=hp1.encoder_dim,
+                 d_inner=hp1.encoder_conv1d_filter_size,
+                 dropout=hp1.dropout):
 
         super(Encoder, self).__init__()
 

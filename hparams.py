@@ -55,3 +55,5 @@ n_bins = 256
 batch_size = 32
 epochs = 1000
 batch_expand_size = 32
+
+max_seq_len = 1000
