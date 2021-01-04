@@ -11,6 +11,7 @@ import hparams as hp
 import utils
 from string import punctuation
 from G2p import G2p
+from time import time
 import re
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
@@ -44,6 +45,7 @@ def get_FastSpeech2(args):
 
 
 def synthesize(model, waveglow, text, idx, prefix='', duration_control=1.0, pitch_control=1.0, energy_control=1.0):
+    t = time()
     src_len = torch.from_numpy(np.array([text.shape[1]])).to(device)
     mel, mel_postnet, log_duration_output, f0_output, energy_output, _, _, mel_len = model(
         text, src_len, d_control=duration_control, p_control=pitch_control, e_control=energy_control)
@@ -59,10 +61,12 @@ def synthesize(model, waveglow, text, idx, prefix='', duration_control=1.0, pitc
         os.makedirs(args.test_path)
     # Audio.tools.inv_mel_spec(mel_postnet, os.path.join(
     #     hp.test_path, '{}_griffin_lim_{}.wav'.format(prefix, name)))
+    t1 = time() - t
     if waveglow is not None:
         utils.waveglow_infer(mel_postnet_torch, waveglow, os.path.join(
             args.test_path, '{}_{}_{}.wav'.format(prefix, hp.vocoder, idx)))
-
+    t2 = time() - t
+    print('{}: time FS: {} (s) time {}: {}'.format(idx, t1, hp.vocoder, t2 - t1))
     # utils.plot_data([(mel_postnet.numpy(), f0_output, energy_output)], [
     #                 'Synthesized Spectrogram'], filename=os.path.join(hp.test_path, '{}_{}.png'.format(prefix, name)))
 
@@ -86,16 +90,20 @@ if __name__ == "__main__":
     parser.add_argument('--test_path', type=str, default='')
     parser.add_argument('--path', type=str, default='test.txt')
     parser.add_argument('--dict_path', type=str, default='syllable_g2p.txt')
+    parser.add_argument('--sent', type=str, default='?')
     parser.add_argument('--duration_control', type=float, default=1.0)
     parser.add_argument('--pitch_control', type=float, default=1.0)
     parser.add_argument('--energy_control', type=float, default=1.0)
 
     args = parser.parse_args()
     sentences = []
-    with open(args.path, 'r', encoding='utf-8') as rf:
-        lines = rf.read().split('\n')
-        for i, line in enumerate(lines):
-            sentences.append(line)
+    if args.sent == '?':
+        sentences.append(args.sent)
+    else:
+        with open(args.path, 'r', encoding='utf-8') as rf:
+            lines = rf.read().split('\n')
+            for i, line in enumerate(lines):
+                sentences.append(line)
 
     model = get_FastSpeech2(args).to(device)
     waveglow = utils.get_waveglow()

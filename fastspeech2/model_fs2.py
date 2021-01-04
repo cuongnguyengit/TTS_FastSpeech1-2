@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformer.Models import Encoder, Decoder
-from transformer.Layers import PostNet
+from transformer_fs2.Models import Encoder, Decoder
+from transformer_fs2.Layers import PostNet
 from fastspeech2.modules_fs2 import VarianceAdaptor
 from utils import get_mask_from_lengths
 import hparams as hp

@@ -10,6 +10,8 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import hparams
+from pydub import AudioSegment
+import IPython
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -117,14 +119,14 @@ def plot_data(data, titles=None, filename=None):
 def get_waveglow():
     if os.path.exists(hp.waveglow_path):
         waveglow = torch.load(hp.waveglow_path)['model']
-        waveglow.eval()
+        waveglow.eval().half()
         for k in waveglow.convinv:
             k.float()
     else:
         waveglow = torch.hub.load(
             'nvidia/DeepLearningExamples:torchhub', 'nvidia_waveglow')
         waveglow = waveglow.remove_weightnorm(waveglow)
-        waveglow.eval()
+        waveglow.eval().half()
         for m in waveglow.modules():
             if 'Conv' in str(type(m)):
                 setattr(m, 'padding_mode', 'zeros')
@@ -135,10 +137,11 @@ def get_waveglow():
 
 def waveglow_infer(mel, waveglow, path):
     with torch.no_grad():
-        wav = waveglow.infer(mel, sigma=1.0) * hp.max_wav_value
-        wav = wav.squeeze().cpu().numpy()
-    wav = wav.astype('int16')
-    wavfile.write(path, hp.sampling_rate, wav)
+        wav = waveglow.infer(mel, sigma=1.0)
+    audio = IPython.display.Audio(wav.cpu().numpy(), rate=hp.sampling_rate)
+    audio = AudioSegment(audio.data, frame_rate=hp.sampling_rate, sample_width=2, channels=1)
+    audio.export(path, format="wav")
+
 
 def pad_1D(inputs, PAD=0):
 

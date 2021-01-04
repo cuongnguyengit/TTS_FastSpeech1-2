@@ -4,7 +4,104 @@ from torch.nn import functional as F
 import numpy as np
 from collections import OrderedDict
 
-from transformer.SubLayers import MultiHeadAttention, PositionwiseFeedForward
+from transformer_fs1.SubLayers import MultiHeadAttention, PositionwiseFeedForward
+from text.symbols import symbols
+
+
+class Linear(nn.Module):
+    """
+    Linear Module
+    """
+
+    def __init__(self, in_dim, out_dim, bias=True, w_init='linear'):
+        """
+        :param in_dim: dimension of input
+        :param out_dim: dimension of output
+        :param bias: boolean. if True, bias is included.
+        :param w_init: str. weight inits with xavier initialization.
+        """
+        super(Linear, self).__init__()
+        self.linear_layer = nn.Linear(in_dim, out_dim, bias=bias)
+
+        nn.init.xavier_uniform_(
+            self.linear_layer.weight,
+            gain=nn.init.calculate_gain(w_init))
+
+    def forward(self, x):
+        return self.linear_layer(x)
+
+
+class PreNet(nn.Module):
+    """
+    Pre Net before passing through the network
+    """
+
+    def __init__(self, input_size, hidden_size, output_size, p=0.5):
+        """
+        :param input_size: dimension of input
+        :param hidden_size: dimension of hidden unit
+        :param output_size: dimension of output
+        """
+        super(PreNet, self).__init__()
+        self.input_size = input_size
+        self.output_size = output_size
+        self.hidden_size = hidden_size
+        self.layer = nn.Sequential(OrderedDict([
+            ('fc1', Linear(self.input_size, self.hidden_size)),
+            ('relu1', nn.ReLU()),
+            ('dropout1', nn.Dropout(p)),
+            ('fc2', Linear(self.hidden_size, self.output_size)),
+            ('relu2', nn.ReLU()),
+            ('dropout2', nn.Dropout(p)),
+        ]))
+
+    def forward(self, input_):
+
+        out = self.layer(input_)
+
+        return out
+
+
+class Conv(nn.Module):
+    """
+    Convolution Module
+    """
+
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 kernel_size=1,
+                 stride=1,
+                 padding=0,
+                 dilation=1,
+                 bias=True,
+                 w_init='linear'):
+        """
+        :param in_channels: dimension of input
+        :param out_channels: dimension of output
+        :param kernel_size: size of kernel
+        :param stride: size of stride
+        :param padding: size of padding
+        :param dilation: dilation rate
+        :param bias: boolean. if True, bias is included.
+        :param w_init: str. weight inits with xavier initialization.
+        """
+        super(Conv, self).__init__()
+
+        self.conv = nn.Conv1d(in_channels,
+                              out_channels,
+                              kernel_size=kernel_size,
+                              stride=stride,
+                              padding=padding,
+                              dilation=dilation,
+                              bias=bias)
+
+        nn.init.xavier_uniform_(
+            self.conv.weight, gain=nn.init.calculate_gain(w_init))
+
+    def forward(self, x):
+        x = self.conv(x)
+        return x
 
 
 class FFTBlock(torch.nn.Module):
@@ -23,13 +120,13 @@ class FFTBlock(torch.nn.Module):
         self.pos_ffn = PositionwiseFeedForward(
             d_model, d_inner, dropout=dropout)
 
-    def forward(self, enc_input, mask=None, slf_attn_mask=None):
+    def forward(self, enc_input, non_pad_mask=None, slf_attn_mask=None):
         enc_output, enc_slf_attn = self.slf_attn(
             enc_input, enc_input, enc_input, mask=slf_attn_mask)
-        enc_output = enc_output.masked_fill(mask.unsqueeze(-1), 0)
+        enc_output *= non_pad_mask
 
         enc_output = self.pos_ffn(enc_output)
-        enc_output = enc_output.masked_fill(mask.unsqueeze(-1), 0)
+        enc_output *= non_pad_mask
 
         return enc_output, enc_slf_attn
 
@@ -57,6 +154,9 @@ class ConvNorm(torch.nn.Module):
                                     padding=padding,
                                     dilation=dilation,
                                     bias=bias)
+
+        torch.nn.init.xavier_uniform_(
+            self.conv.weight, gain=torch.nn.init.calculate_gain(w_init_gain))
 
     def forward(self, signal):
         conv_signal = self.conv(signal)

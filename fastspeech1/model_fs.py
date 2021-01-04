@@ -3,8 +3,8 @@ import torch.nn as nn
 import hparams as hp
 import utils
 
-from transformer.Models import Encoder, Decoder
-from transformer.Layers import Linear, PostNet
+from transformer_fs1.Models import Encoder, Decoder
+from transformer_fs1.Layers import Linear, PostNet
 from fastspeech1.modules_fs import LengthRegulator, CBHG
 
 

@@ -51,6 +51,10 @@ def main(args, device):
         model.parameters(), betas=hp.betas, eps=hp.eps, weight_decay=hp.weight_decay)
     scheduled_optim = ScheduledOptim(
         optimizer, hp.decoder_hidden, hp.n_warm_up_step, args.restore_step)
+    # Optimizer and loss)
+
+
+
     Loss = FastSpeech2Loss().to(device)
     print("Optimizer and Loss Function Defined.")
 
@@ -101,6 +105,8 @@ def main(args, device):
 
                 current_step = i*hp.batch_size + j + args.restore_step + \
                     epoch*len(loader)*hp.batch_size + 1
+
+                scheduled_optim.zero_grad()
 
                 # Get Data
                 text = torch.from_numpy(
@@ -160,8 +166,12 @@ def main(args, device):
                     model.parameters(), hp.grad_clip_thresh)
 
                 # Update weights
-                scheduled_optim.step_and_update_lr()
-                scheduled_optim.zero_grad()
+                if args.frozen_learning_rate:
+                    scheduled_optim.step_and_update_lr_frozen(
+                        args.learning_rate_frozen)
+                else:
+                    scheduled_optim.step_and_update_lr()
+
 
                 # Print
                 if current_step % hp.log_step == 0:
@@ -173,13 +183,16 @@ def main(args, device):
                         epoch+1, hp.epochs, current_step, total_step)
                     str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
                         t_l, m_l, m_p_l, d_l, f_l, e_l)
-                    str3 = "\tTime Used: {:.3f}s, Estimated Time Remaining: {:.3f}s.".format(
+                    str3 = "Current Learning Rate is {:.6f}.".format(
+                        scheduled_optim.get_learning_rate())
+                    str4 = "\tTime Used: {:.3f}s, Estimated Time Remaining: {:.3f}s.".format(
                         (Now-Start), (total_step-current_step)*np.mean(Time))
 
                     print("\n" + str0)
                     print(str1)
                     print(str2)
                     print(str3)
+                    print(str4)
 
                     with open(os.path.join(log_path, "log.txt"), "a") as f_log:
                         f_log.write(str1 + "\n")
@@ -187,16 +200,16 @@ def main(args, device):
                         f_log.write(str3 + "\n")
                         f_log.write("\n")
 
-                    # train_logger.add_scalar(
-                    #     'Loss/total_loss', t_l, current_step)
-                    # train_logger.add_scalar('Loss/mel_loss', m_l, current_step)
-                    # train_logger.add_scalar(
-                    #     'Loss/mel_postnet_loss', m_p_l, current_step)
-                    # train_logger.add_scalar(
-                    #     'Loss/duration_loss', d_l, current_step)
-                    # train_logger.add_scalar('Loss/F0_loss', f_l, current_step)
-                    # train_logger.add_scalar(
-                    #     'Loss/energy_loss', e_l, current_step)
+                    train_logger.add_scalar(
+                        'Loss/total_loss', t_l, current_step)
+                    train_logger.add_scalar('Loss/mel_loss', m_l, current_step)
+                    train_logger.add_scalar(
+                        'Loss/mel_postnet_loss', m_p_l, current_step)
+                    train_logger.add_scalar(
+                        'Loss/duration_loss', d_l, current_step)
+                    train_logger.add_scalar('Loss/F0_loss', f_l, current_step)
+                    train_logger.add_scalar(
+                        'Loss/energy_loss', e_l, current_step)
 
                 if current_step % hp.save_step == 0:
                     torch.save({'model': model.state_dict(), 'optimizer': optimizer.state_dict(
@@ -214,8 +227,8 @@ def main(args, device):
                     # mel = mel_output[0, :length].detach().cpu().transpose(0, 1)
                     mel_postnet_torch = mel_postnet_output[0, :length].detach(
                     ).unsqueeze(0).transpose(1, 2)
-                    mel_postnet = mel_postnet_output[0, :length].detach(
-                    ).cpu().transpose(0, 1)
+                    # mel_postnet = mel_postnet_output[0, :length].detach(
+                    # ).cpu().transpose(0, 1)
                     # Audio.tools.inv_mel_spec(mel, os.path.join(
                     #     synth_path, "step_{}_griffin_lim.wav".format(current_step)))
                     # Audio.tools.inv_mel_spec(mel_postnet, os.path.join(
@@ -252,7 +265,7 @@ def main(args, device):
                         d_l, f_l, e_l, m_l, m_p_l = evaluate(
                             model, current_step)
                         t_l = d_l + f_l + e_l + m_l + m_p_l
-                        str0 = 'Validate'
+                        str0 = 'Validating'
                         str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
                             epoch + 1, hp.epochs, current_step, total_step)
                         str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(

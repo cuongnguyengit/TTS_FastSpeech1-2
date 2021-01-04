@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from transformer.Modules import ScaledDotProductAttention
+from transformer_fs2.Modules import ScaledDotProductAttention
 import hparams as hp
 
 

@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-import transformer.Constants as Constants
-from transformer.Layers import FFTBlock
+import transformer_fs2.Constants as Constants
+from transformer_fs2.Layers import FFTBlock
 from text.symbols import symbols
 import hparams as hp
 
