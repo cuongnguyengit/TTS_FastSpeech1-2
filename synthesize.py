@@ -26,7 +26,7 @@ def preprocess(text):
     phone = re.sub(r'\{[^\w\s]?\}', '{sp}', phone)
     phone = phone.replace('}{', ' ')
     print('|' + phone + '|')
-    sequence = np.array(text_to_sequence(text, hp.text_cleaners))
+    sequence = np.array(text_to_sequence(phone, hp.text_cleaners))
     print(sequence_to_text(sequence))
     print(sequence)
     sequence = np.stack([sequence])
