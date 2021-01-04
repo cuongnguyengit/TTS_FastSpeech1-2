@@ -19,7 +19,7 @@ def preprocess(text):
     text = text.rstrip(punctuation).lower()
     g2p = G2p(args.dict_path)
     phone = g2p.g2p(text)
-    phone = list(filter(lambda p: p != ' ', phone))
+    # phone = list(filter(lambda p: p != ' ', phone))
     phone = '{' + '}{'.join(phone) + '}'
     phone = re.sub(r'\{[^\w\s]?\}', '{sp}', phone)
     phone = phone.replace('}{', ' ')
