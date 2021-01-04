@@ -22,7 +22,7 @@ def preprocess(text):
     phone = g2p.g2p(text)
     # phone = list(filter(lambda p: p != ' ', phone))
     print(phone)
-    phone = '{' + '}{'.join(phone) + '}'
+    phone = '{' + '}{'.join(phone.split()) + '}'
     phone = re.sub(r'\{[^\w\s]?\}', '{sp}', phone)
     phone = phone.replace('}{', ' ')
     print('|' + phone + '|')
