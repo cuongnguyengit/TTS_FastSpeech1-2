@@ -60,7 +60,7 @@ def main(args, device):
 
     # Init logger
     if not os.path.exists(hp.log_path):
-        os.mkdir(hp.log_path)
+        os.makedirs(hp.log_path)
 
     # Get dataset
     dataset = BufferDataset(buffer)
