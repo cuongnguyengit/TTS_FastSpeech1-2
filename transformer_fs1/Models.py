@@ -105,13 +105,13 @@ class Decoder(nn.Module):
 
     def __init__(self,
                  len_max_seq=hp.max_seq_len,
-                 n_layers=hp.decoder_n_layer,
-                 n_head=hp.decoder_head,
-                 d_k=hp.decoder_dim // hp.decoder_head,
-                 d_v=hp.decoder_dim // hp.decoder_head,
-                 d_model=hp.decoder_dim,
-                 d_inner=hp.decoder_conv1d_filter_size,
-                 dropout=hp.dropout):
+                 n_layers=hp1.decoder_n_layer,
+                 n_head=hp1.decoder_head,
+                 d_k=hp1.decoder_dim // hp1.decoder_head,
+                 d_v=hp1.decoder_dim // hp1.decoder_head,
+                 d_model=hp1.decoder_dim,
+                 d_inner=hp1.decoder_conv1d_filter_size,
+                 dropout=hp1.dropout):
 
         super(Decoder, self).__init__()
 
