@@ -35,82 +35,6 @@ f0_max = 786.6
 energy_min = 0.0
 energy_max = 321.4
 
-decoder_layer = 4
-decoder_head = 2
-decoder_hidden = 256
-encoder_hidden = 256
-encoder_layer = 4
-fft_conv1d_filter_size = 1024
-fft_conv1d_kernel_size = (9, 1)
-encoder_dropout = 0.2
-decoder_dropout = 0.2
-
-# if model == 'FastSpeech1':
-#     # FastSpeech 1
-#     vocab_size = 300
-#     max_seq_len = 3000
-#
-#     encoder_dim = 256
-#     encoder_n_layer = 4
-#     encoder_head = 2
-#     encoder_conv1d_filter_size = 1024
-#
-#     decoder_dim = 256
-#     decoder_n_layer = 4
-#     # decoder_head = 2
-#     decoder_conv1d_filter_size = 1024
-#
-#     fft_conv1d_kernel = (9, 1)
-#     fft_conv1d_padding = (4, 0)
-#
-#     duration_predictor_filter_size = 256
-#     duration_predictor_kernel_size = 3
-#     dropout = 0.1
-#
-#     batch_size = 32
-#     epochs = 2000
-#     n_warm_up_step = 4000
-#
-#     learning_rate = 1e-3
-#     weight_decay = 1e-6
-#     grad_clip_thresh = 1.0
-#     decay_step = [500000, 1000000, 2000000]
-#
-#     save_step = 3000
-#     log_step = 5
-#     clear_Time = 20
-#
-#     batch_expand_size = 32
-
-# elif model == 'FastSpeech2':
-# FastSpeech 2
-encoder_layer = 4
-encoder_head = 2
-
-decoder_layer = 4
-decoder_head = 2
-decoder_hidden = 256
-fft_conv1d_filter_size = 1024
-fft_conv1d_kernel_size = (9, 1)
-encoder_dropout = 0.2
-decoder_dropout = 0.2
-
-variance_predictor_filter_size = 256
-variance_predictor_kernel_size = 3
-variance_predictor_dropout = 0.5
-
-max_seq_len = 1000
-
-# Optimizer
-batch_size = 16
-epochs = 300
-n_warm_up_step = 4000
-grad_clip_thresh = 1.0
-acc_steps = 1
-
-betas = (0.9, 0.98)
-eps = 1e-9
-weight_decay = 0.
 
 # Vocoder
 vocoder = 'waveglow'  # 'waveglow' or 'melgan'
@@ -127,3 +51,7 @@ log_step = 1000
 clear_Time = 20
 
 n_bins = 256
+
+batch_size = 32
+epochs = 1000
+batch_expand_size = 32

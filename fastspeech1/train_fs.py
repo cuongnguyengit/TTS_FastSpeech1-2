@@ -18,6 +18,11 @@ import utils
 
 
 def main(args, device):
+    hp.checkpoint_path = os.path.join(hp.root_path, args.name_task, "ckpt", hp.dataset)
+    hp.synth_path = os.path.join(hp.root_path, args.name_task, "synth", hp.dataset)
+    hp.eval_path = os.path.join(hp.root_path, args.name_task, "eval", hp.dataset)
+    hp.log_path = os.path.join(hp.root_path, args.name_task, "log", hp.dataset)
+    hp.test_path = os.path.join(hp.root_path, args.name_task, 'results')
     # Define model
     print("Use FastSpeech")
     model = nn.DataParallel(FastSpeech()).to(device)
@@ -40,16 +45,18 @@ def main(args, device):
     print("Defined Optimizer and Loss Function.")
 
     # Load checkpoint if exists
+    checkpoint_path = os.path.join(args.restore_path)
     try:
         checkpoint = torch.load(os.path.join(
-            hp.checkpoint_path, 'checkpoint_%d.pth.tar' % args.restore_step))
+            checkpoint_path, 'checkpoint_%d.pth.tar' % args.restore_step))
         model.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         print("\n---Model Restored at Step %d---\n" % args.restore_step)
     except:
         print("\n---Start New Training---\n")
-        if not os.path.exists(hp.checkpoint_path):
-            os.mkdir(hp.checkpoint_path)
+        checkpoint_path = os.path.join(hp.checkpoint_path)
+        if not os.path.exists(checkpoint_path):
+            os.makedirs(checkpoint_path)
 
     # Init logger
     if not os.path.exists(hp.log_path):
