@@ -43,7 +43,7 @@ def get_FastSpeech2(args):
     return model
 
 
-def synthesize(model, waveglow, text, sentence, prefix='', duration_control=1.0, pitch_control=1.0, energy_control=1.0):
+def synthesize(model, waveglow, text, idx, prefix='', duration_control=1.0, pitch_control=1.0, energy_control=1.0):
     src_len = torch.from_numpy(np.array([text.shape[1]])).to(device)
     mel, mel_postnet, log_duration_output, f0_output, energy_output, _, _, mel_len = model(
         text, src_len, d_control=duration_control, p_control=pitch_control, e_control=energy_control)
@@ -57,12 +57,11 @@ def synthesize(model, waveglow, text, sentence, prefix='', duration_control=1.0,
 
     if not os.path.exists(args.test_path):
         os.makedirs(args.test_path)
-    name = ''.join(unidecode(sentence).split())
     # Audio.tools.inv_mel_spec(mel_postnet, os.path.join(
     #     hp.test_path, '{}_griffin_lim_{}.wav'.format(prefix, name)))
     if waveglow is not None:
         utils.waveglow_infer(mel_postnet_torch, waveglow, os.path.join(
-            args.test_path, '{}_{}_{}.wav'.format(prefix, hp.vocoder, name[:10])))
+            args.test_path, '{}_{}_{}.wav'.format(prefix, hp.vocoder, idx)))
 
     # utils.plot_data([(mel_postnet.numpy(), f0_output, energy_output)], [
     #                 'Synthesized Spectrogram'], filename=os.path.join(hp.test_path, '{}_{}.png'.format(prefix, name)))
@@ -99,14 +98,14 @@ if __name__ == "__main__":
             sentences.append(line)
 
     model = get_FastSpeech2(args).to(device)
-    # waveglow = utils.get_waveglow()
-    waveglow = None
+    waveglow = utils.get_waveglow()
+    # waveglow = None
     with torch.no_grad():
         for idx, sentence in enumerate(sentences):
             text = preprocess(sentence)
             print(text.shape)
-            # synthesize(model, waveglow, text, sentence, 'step_{}'.format(
-            #     args.step), args.duration_control, args.pitch_control, args.energy_control)
+            synthesize(model, waveglow, text, idx, 'step_{}'.format(
+                args.step), args.duration_control, args.pitch_control, args.energy_control)
             gen_mel(model, text, idx, duration_control=1.0, pitch_control=1.0, energy_control=1.0)
             print('DONE', idx)
 
