@@ -166,7 +166,7 @@ def main(args, device):
                     print(str3)
                     print(str4)
 
-                    with open(os.path.join("logger", "logger.txt"), "a") as f_logger:
+                    with open(os.path.join(hp.log_path, "logger.txt"), "a") as f_logger:
                         f_logger.write(str1 + "\n")
                         f_logger.write(str2 + "\n")
                         f_logger.write(str3 + "\n")
