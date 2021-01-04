@@ -114,7 +114,7 @@ if __name__ == "__main__":
             print(text.shape)
             synthesize(model, waveglow, text, idx, 'step_{}'.format(
                 args.step), args.duration_control, args.pitch_control, args.energy_control)
-            gen_mel(model, text, idx, duration_control=1.0, pitch_control=1.0, energy_control=1.0)
+            gen_mel(model, text, idx, args.duration_control, args.pitch_control, args.energy_control)
             print('DONE', idx)
 
     # print(text_to_sequence('{o2_T1 l e2_T1 sp k o1_T3 t ie2_T3 ng ng uoi3_T2 sp n oi_T3}', ['basic_cleaners']))
