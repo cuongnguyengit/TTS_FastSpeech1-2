@@ -119,7 +119,7 @@ class Decoder(nn.Module):
 
         # -- Forward
         if not self.training and enc_seq.shape[1] > hp.max_seq_len:
-            dec_output = enc_seq + get_sinusoid_encoding_table(enc_seq.shape[1], hp.decoder_hidden)[
+            dec_output = enc_seq + get_sinusoid_encoding_table(enc_seq.shape[1], hp2.decoder_hidden)[
                 :enc_seq.shape[1], :].unsqueeze(0).expand(batch_size, -1, -1).to(enc_seq.device)
         else:
             dec_output = enc_seq + \
