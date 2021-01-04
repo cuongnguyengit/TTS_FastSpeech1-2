@@ -9,14 +9,21 @@ from fastspeech2.model_fs2 import FastSpeech2
 from text import text_to_sequence, sequence_to_text
 import hparams as hp
 import utils
-# import audio as Audio
-
+from string import punctuation
+from G2p import G2p
+import re
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
 def preprocess(text):
-    # text = text.rstrip(punctuation)
-    print('Text', text)
+    text = text.rstrip(punctuation).lower()
+    g2p = G2p()
+    phone = g2p.g2p(text)
+    phone = list(filter(lambda p: p != ' ', phone))
+    phone = '{' + '}{'.join(phone) + '}'
+    phone = re.sub(r'\{[^\w\s]?\}', '{sp}', phone)
+    phone = phone.replace('}{', ' ')
+    print('|' + phone + '|')
     sequence = np.array(text_to_sequence(text, hp.text_cleaners))
     print(sequence_to_text(sequence))
     print(sequence)
@@ -58,6 +65,17 @@ def synthesize(model, waveglow, text, sentence, prefix='', duration_control=1.0,
     # utils.plot_data([(mel_postnet.numpy(), f0_output, energy_output)], [
     #                 'Synthesized Spectrogram'], filename=os.path.join(hp.test_path, '{}_{}.png'.format(prefix, name)))
 
+def gen_mel(model, text, idx, duration_control=1.0, pitch_control=1.0, energy_control=1.0):
+    src_len = torch.from_numpy(np.array([text.shape[1]])).to(device)
+    mel, mel_postnet, log_duration_output, f0_output, energy_output, _, _, mel_len = model(
+        text, src_len, d_control=duration_control, p_control=pitch_control, e_control=energy_control)
+    mel_postnet = mel_postnet[0].cpu().transpose(0, 1).detach()
+    mel = mel[0].cpu().transpose(0, 1).detach()
+    mel_filename = '{}-mel.npy'.format(idx)
+    np.save(os.path.join(args.test_path, mel_filename), mel, allow_pickle=False)
+    mel_filename = '{}-mel-post.npy'.format(idx)
+    np.save(os.path.join(args.test_path, mel_filename), mel_postnet, allow_pickle=False)
+
 
 if __name__ == "__main__":
     # Test
@@ -65,29 +83,28 @@ if __name__ == "__main__":
     parser.add_argument('--step', type=int, default=300000)
     parser.add_argument('--checkpoint_path', type=str, default='')
     parser.add_argument('--test_path', type=str, default='')
-    parser.add_argument('--sentence', type=str, default='xin chào các bạn .')
+    parser.add_argument('--path', type=str, default='test.txt')
     parser.add_argument('--duration_control', type=float, default=1.0)
     parser.add_argument('--pitch_control', type=float, default=1.0)
     parser.add_argument('--energy_control', type=float, default=1.0)
 
     args = parser.parse_args()
-
-    sentences = [
-        "{o2_T1 l e2_T1 sp k o1_T3 t ie2_T3 ng ng uoi3_T2 sp n oi_T3}",
-        # "thế từ chỗ này không nhìn thấy cầu à",
-        # 'bệnh viêm phổi lạ khởi phát từ vũ hán , trung quốc , sau được xác định là cô vít mười chín , không chỉ khiến'
-        # ' trung quốc phong tỏa hơn sáu mươi triệu dân mà nó cũng nhanh chóng trở thành đại dịch toàn cầu , '
-        # 'khiến hơn bảy tư triệu người mắc bệnh , trong đó hơn một phẩy sáu triệu người tử vong'
-    ]
-    sentences.append(args.sentence)
+    sentences = []
+    with open(args.path, 'r', encoding='utf-8') as rf:
+        lines = rf.read().split('\n')
+        for i, line in enumerate(lines):
+            sentences.append(line)
 
     model = get_FastSpeech2(args).to(device)
-    waveglow = utils.get_waveglow()
+    # waveglow = utils.get_waveglow()
+    waveglow = None
     with torch.no_grad():
-        for sentence in sentences:
+        for idx, sentence in enumerate(sentences):
             text = preprocess(sentence)
             print(text.shape)
-            synthesize(model, waveglow, text, sentence, 'step_{}'.format(
-                args.step), args.duration_control, args.pitch_control, args.energy_control)
+            # synthesize(model, waveglow, text, sentence, 'step_{}'.format(
+            #     args.step), args.duration_control, args.pitch_control, args.energy_control)
+            gen_mel(model, text, idx, duration_control=1.0, pitch_control=1.0, energy_control=1.0)
+            print('DONE', idx)
 
     # print(text_to_sequence('{o2_T1 l e2_T1 sp k o1_T3 t ie2_T3 ng ng uoi3_T2 sp n oi_T3}', ['basic_cleaners']))
