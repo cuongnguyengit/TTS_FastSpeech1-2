@@ -15,10 +15,10 @@ from tqdm import tqdm
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def get_data_to_buffer():
+def get_data_to_buffer(file='train.txt'):
     buffer = list()
     basename, text = process_meta(
-        os.path.join(hparams.data_path, 'outdir', 'train.txt'), [])
+        os.path.join(hparams.data_path, 'outdir', file), [])
 
     start = time.perf_counter()
     for i in tqdm(range(len(text))):

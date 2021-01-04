@@ -10,10 +10,12 @@ import os
 import hparams as hp
 import audio
 import utils
-
+from torch.utils.data import DataLoader
 import text
 from fastspeech1 import model_fs as M
-import waveglow
+from dataset.dataset_fs import BufferDataset
+from dataset.dataset_fs import get_data_to_buffer, collate_fn_tensor
+from fastspeech1.loss_fs import DNNLoss
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -57,32 +59,58 @@ def get_data():
     return data_list
 
 
-if __name__ == "__main__":
-    # Test
-    WaveGlow = utils.get_WaveGlow()
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--step', type=int, default=0)
-    parser.add_argument("--alpha", type=float, default=1.0)
-    args = parser.parse_args()
+def evaluate(model, step, vocoder=None):
+    torch.manual_seed(0)
 
-    print("use griffin-lim and waveglow")
-    model = get_DNN(args.step)
-    data_list = get_data()
-    for i, phn in enumerate(data_list):
-        mel, mel_cuda = synthesis(model, phn, args.alpha)
-        if not os.path.exists("results"):
-            os.mkdir("results")
-        audio.tools.inv_mel_spec(
-            mel, "results/"+str(args.step)+"_"+str(i)+".wav")
-        waveglow.inference.inference(
-            mel_cuda, WaveGlow,
-            "results/"+str(args.step)+"_"+str(i)+"_waveglow.wav")
-        print("Done", i + 1)
+    # Get dataset
+    print("Load data to buffer")
+    buffer = get_data_to_buffer('train.txt')
+    dataset = BufferDataset(buffer)
 
-    s_t = time.perf_counter()
-    for i in range(100):
-        for _, phn in enumerate(data_list):
-            _, _, = synthesis(model, phn, args.alpha)
-        print(i)
-    e_t = time.perf_counter()
-    print((e_t - s_t) / 100.)
+    # Get Training Loader
+    validating_loader = DataLoader(dataset,
+                                 batch_size=hp.batch_expand_size * hp.batch_size,
+                                 shuffle=True,
+                                 collate_fn=collate_fn_tensor,
+                                 drop_last=True,
+                                 num_workers=0)
+
+    # Get Loss
+    fastspeech_loss = DNNLoss().to(device)
+
+    d_l = []
+    mel_l = []
+    mel_p_l = []
+
+    for i, batchs in enumerate(validating_loader):
+        # real batch start here
+        for j, db in enumerate(batchs):
+            start_time = time.perf_counter()
+            # Get Data
+            character = db["text"].long().to(device)
+            mel_target = db["mel_target"].float().to(device)
+            duration = db["duration"].int().to(device)
+            mel_pos = db["mel_pos"].long().to(device)
+            src_pos = db["src_pos"].long().to(device)
+            max_mel_len = db["mel_max_len"]
+
+            with torch.no_grad():
+                # Forward
+                mel_output, mel_postnet_output, duration_predictor_output = model(character,
+                                                                                  src_pos,
+                                                                                  mel_pos=mel_pos,
+                                                                                  mel_max_length=max_mel_len,
+                                                                                  length_target=duration)
+
+                # Cal Loss
+                mel_loss, mel_postnet_loss, duration_loss = fastspeech_loss(mel_output,
+                                                                            mel_postnet_output,
+                                                                            duration_predictor_output,
+                                                                            mel_target,
+                                                                            duration)
+                total_loss = mel_loss + mel_postnet_loss + duration_loss
+
+                d_l.append(duration_loss.item())
+                mel_l.append(mel_loss.item())
+                mel_p_l.append(mel_postnet_loss.item())
+

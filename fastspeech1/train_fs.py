@@ -31,7 +31,7 @@ def main(args, device):
     print('Number of TTS Parameters:', num_param)
     # Get buffer
     print("Load data to buffer")
-    buffer = get_data_to_buffer()
+    buffer = get_data_to_buffer('train.txt')
 
     # Optimizer and loss
     optimizer = torch.optim.Adam(model.parameters(),
@@ -154,8 +154,8 @@ def main(args, device):
 
                     str1 = "Epoch [{}/{}], Step [{}/{}]:".format(
                         epoch+1, hp.epochs, current_step, total_step)
-                    str2 = "Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f};".format(
-                        m_l, m_p_l, d_l)
+                    str2 = "Total Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f};".format(
+                        t_l, m_l, m_p_l, d_l)
                     str3 = "Current Learning Rate is {:.6f}.".format(
                         scheduled_optim.get_learning_rate())
                     str4 = "Time Used: {:.3f}s, Estimated Time Remaining: {:.3f}s.".format(
