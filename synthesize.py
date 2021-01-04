@@ -17,7 +17,7 @@ print(device)
 
 def preprocess(text):
     text = text.rstrip(punctuation).lower()
-    g2p = G2p()
+    g2p = G2p(args.dict_path)
     phone = g2p.g2p(text)
     phone = list(filter(lambda p: p != ' ', phone))
     phone = '{' + '}{'.join(phone) + '}'
@@ -84,6 +84,7 @@ if __name__ == "__main__":
     parser.add_argument('--checkpoint_path', type=str, default='')
     parser.add_argument('--test_path', type=str, default='')
     parser.add_argument('--path', type=str, default='test.txt')
+    parser.add_argument('--dict_path', type=str, default='syllable_g2p.txt')
     parser.add_argument('--duration_control', type=float, default=1.0)
     parser.add_argument('--pitch_control', type=float, default=1.0)
     parser.add_argument('--energy_control', type=float, default=1.0)
