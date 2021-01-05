@@ -62,7 +62,7 @@ def reprocess_tensor(batch, cut_list):
     texts = [batch[ind]["text"] for ind in cut_list]
     mel_targets = [batch[ind]["mel_target"] for ind in cut_list]
     durations = [batch[ind]["duration"] for ind in cut_list]
-    print(len(durations), len(cut_list))
+    # print(len(durations), len(cut_list))
     length_text = np.array([])
     for text in texts:
         length_text = np.append(length_text, text.size(0))
