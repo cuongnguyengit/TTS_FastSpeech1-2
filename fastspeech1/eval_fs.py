@@ -64,7 +64,7 @@ def evaluate(model, step, vocoder=None):
 
     # Get dataset
     print("Load data to buffer")
-    buffer = get_data_to_buffer('train.txt')
+    buffer = get_data_to_buffer('val.txt')
     dataset = BufferDataset(buffer)
 
     # Get Training Loader
@@ -72,7 +72,7 @@ def evaluate(model, step, vocoder=None):
                                  batch_size=hp.batch_expand_size * hp.batch_size,
                                  shuffle=True,
                                  collate_fn=collate_fn_tensor,
-                                 drop_last=True,
+                                 drop_last=False,
                                  num_workers=0)
 
     # Get Loss
@@ -84,70 +84,72 @@ def evaluate(model, step, vocoder=None):
     mel_p_l = []
     idx = 0
     current_step = 0
-
+    x = [i for i, batchs in enumerate(validating_loader)]
+    print(len(x))
     for i, batchs in enumerate(validating_loader):
         # real batch start here
         for j, db in enumerate(batchs):
-            start_time = time.perf_counter()
+            print(len(batchs), len(db))
             # Get Data
             id_ = db["name"]
+            src_len = torch.from_numpy(
+                db["src_len"]).long().to(device)
+            mel_len = torch.from_numpy(
+                db["mel_len"]).long().to(device)
+
+            # Get Data
             character = db["text"].long().to(device)
             mel_target = db["mel_target"].float().to(device)
             duration = db["duration"].int().to(device)
             mel_pos = db["mel_pos"].long().to(device)
             src_pos = db["src_pos"].long().to(device)
             max_mel_len = db["mel_max_len"]
-            src_len = torch.from_numpy(
-                db["src_len"]).long().to(device)
-            mel_len = torch.from_numpy(
-                db["mel_len"]).long().to(device)
+            print(duration.shape)
+            # Forward
+            mel_output, mel_postnet_output, duration_predictor_output = model(character,
+                                                                              src_pos,
+                                                                              mel_pos=mel_pos,
+                                                                              mel_max_length=max_mel_len,
+                                                                              length_target=duration)
 
-            with torch.no_grad():
-                # Forward
-                mel_output, mel_postnet_output, duration_predictor_output = model(character,
-                                                                                  src_pos,
-                                                                                  mel_pos=mel_pos,
-                                                                                  mel_max_length=max_mel_len,
-                                                                                  length_target=duration)
+            # Cal Loss
+            mel_loss, mel_postnet_loss, duration_loss = fastspeech_loss(mel_output,
+                                                                        mel_postnet_output,
+                                                                        duration_predictor_output,
+                                                                        mel_target,
+                                                                        duration)
+            total_loss = mel_loss + mel_postnet_loss + duration_loss
 
-                # Cal Loss
-                mel_loss, mel_postnet_loss, duration_loss = fastspeech_loss(mel_output,
-                                                                            mel_postnet_output,
-                                                                            duration_predictor_output,
-                                                                            mel_target,
-                                                                            duration)
-                total_loss = mel_loss + mel_postnet_loss + duration_loss
+            t_l.append(total_loss.item())
+            d_l.append(duration_loss.item())
+            mel_l.append(mel_loss.item())
+            mel_p_l.append(mel_postnet_loss.item())
 
-                t_l.append(total_loss.item())
-                d_l.append(duration_loss.item())
-                mel_l.append(mel_loss.item())
-                mel_p_l.append(mel_postnet_loss.item())
+            if vocoder is not None:
+                # Run vocoding and plotting spectrogram only when the vocoder is defined
+                for k in range(len(mel_target)):
+                    basename = id_[k]
+                    gt_length = mel_len[k]
+                    # out_length = out_mel_len[k]
+                    mel_target_torch = mel_target[k:k + 1,
+                                       :gt_length].transpose(1, 2).detach()
+                    # mel_target_ = mel_target[k, :gt_length].cpu(
+                    # ).transpose(0, 1).detach()
 
-                if vocoder is not None:
-                    # Run vocoding and plotting spectrogram only when the vocoder is defined
-                    for k in range(len(mel_target)):
-                        basename = id_[k]
-                        gt_length = mel_len[k]
-                        # out_length = out_mel_len[k]
-                        mel_target_torch = mel_target[k:k + 1,
-                                           :gt_length].transpose(1, 2).detach()
-                        # mel_target_ = mel_target[k, :gt_length].cpu(
-                        # ).transpose(0, 1).detach()
+                    mel_postnet_torch = mel_postnet_output[k:k +
+                                                             1, :].transpose(1, 2).detach()
+                    mel_postnet = mel_postnet_output[k, :].cpu(
+                    ).transpose(0, 1).detach()
 
-                        mel_postnet_torch = mel_postnet_output[k:k +
-                                                                 1, :].transpose(1, 2).detach()
-                        mel_postnet = mel_postnet_output[k, :].cpu(
-                        ).transpose(0, 1).detach()
+                    if hp.vocoder == 'waveglow':
+                        utils.waveglow_infer(mel_target_torch, vocoder, os.path.join(
+                            hp.eval_path, 'ground-truth_{}_{}.wav'.format(basename, hp.vocoder)))
+                        utils.waveglow_infer(mel_postnet_torch, vocoder, os.path.join(
+                            hp.eval_path, 'eval_{}_{}.wav'.format(basename, hp.vocoder)))
 
-                        if hp.vocoder == 'waveglow':
-                            utils.waveglow_infer(mel_target_torch, vocoder, os.path.join(
-                                hp.eval_path, 'ground-truth_{}_{}.wav'.format(basename, hp.vocoder)))
-                            utils.waveglow_infer(mel_postnet_torch, vocoder, os.path.join(
-                                hp.eval_path, 'eval_{}_{}.wav'.format(basename, hp.vocoder)))
-
-                        np.save(os.path.join(hp.eval_path, 'eval_{}_mel.npy'.format(
-                            basename)), mel_postnet.numpy())
-                        idx += 1
+                    np.save(os.path.join(hp.eval_path, 'eval_{}_mel.npy'.format(
+                        basename)), mel_postnet.numpy())
+                    idx += 1
 
             current_step += 1
 

@@ -62,13 +62,15 @@ def reprocess_tensor(batch, cut_list):
     texts = [batch[ind]["text"] for ind in cut_list]
     mel_targets = [batch[ind]["mel_target"] for ind in cut_list]
     durations = [batch[ind]["duration"] for ind in cut_list]
-
+    print(len(durations), len(cut_list))
     length_text = np.array([])
     for text in texts:
         length_text = np.append(length_text, text.size(0))
 
     src_pos = list()
+
     max_len = int(max(length_text))
+
     for length_src_row in length_text:
         src_pos.append(np.pad([i+1 for i in range(int(length_src_row))],
                               (0, max_len-int(length_src_row)), 'constant'))
@@ -80,6 +82,7 @@ def reprocess_tensor(batch, cut_list):
 
     mel_pos = list()
     max_mel_len = int(max(length_mel))
+
     for length_mel_row in length_mel:
         mel_pos.append(np.pad([i+1 for i in range(int(length_mel_row))],
                               (0, max_mel_len-int(length_mel_row)), 'constant'))
@@ -103,7 +106,7 @@ def reprocess_tensor(batch, cut_list):
 
 
 def collate_fn_tensor(batch):
-    len_arr = np.array([d["text"].size(0) for d in batch])
+    len_arr = np.array([d["text"].shape[0] for d in batch])
     index_arr = np.argsort(-len_arr)
     batchsize = len(batch)
     real_batchsize = batchsize // hparams.batch_expand_size
@@ -111,7 +114,6 @@ def collate_fn_tensor(batch):
     cut_list = list()
     for i in range(hparams.batch_expand_size):
         cut_list.append(index_arr[i*real_batchsize:(i+1)*real_batchsize])
-
     output = list()
     for i in range(hparams.batch_expand_size):
         output.append(reprocess_tensor(batch, cut_list[i]))

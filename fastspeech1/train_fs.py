@@ -90,6 +90,7 @@ def main(args, device):
         for i, batchs in enumerate(training_loader):
             # real batch start here
             for j, db in enumerate(batchs):
+                print(len(batchs), len(db))
                 start_time = time.perf_counter()
 
                 current_step = i * hp.batch_expand_size + j + args.restore_step + \
@@ -183,21 +184,21 @@ def main(args, device):
                     )}, os.path.join(hp.checkpoint_path, 'checkpoint_%d.pth.tar' % current_step))
                     print("save model at step %d ..." % current_step)
 
-                if current_step % hp.eval_step == 0:
-                    model.eval()
-                    with torch.no_grad():
-                        t_l, d_l, mel_l, mel_p_l = evaluate(
-                            model, current_step, vocoder=waveglow)
+                # if current_step % 10 == 0:
+                #     model.eval()
+                #     with torch.no_grad():
+                #         t_l, d_l, mel_l, mel_p_l = evaluate(
+                #             model, current_step, vocoder=waveglow)
 
-                        str0 = 'Validating'
-                        str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
-                            epoch + 1, hp.epochs, current_step, total_step)
-                        str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f};".format(
-                            t_l, m_l, m_p_l, d_l)
-                        print(str0)
-                        print(str1)
-                        print(str2)
-                    model.train()
+                #         str0 = 'Validating'
+                #         str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
+                #             epoch + 1, hp.epochs, current_step, total_step)
+                #         str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f};".format(
+                #             t_l, m_l, m_p_l, d_l)
+                #         print(str0)
+                #         print(str1)
+                #         print(str2)
+                #     model.train()
 
                 end_time = time.perf_counter()
                 Time = np.append(Time, end_time - start_time)
