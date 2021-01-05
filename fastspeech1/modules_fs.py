@@ -42,7 +42,7 @@ def clones(module, N):
 
 # @jit(nopython=True)
 def create_alignment(base_mat, duration_predictor_output):
-    print(base_mat.shape, duration_predictor_output.shape)
+    # print(base_mat.shape, duration_predictor_output.shape)
     N, L = duration_predictor_output.shape
     for i in range(N):
         count = 0
