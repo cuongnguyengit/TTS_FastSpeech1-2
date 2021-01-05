@@ -36,7 +36,7 @@ def get_data_to_buffer(file='train.txt'):
         duration = torch.from_numpy(duration)
         mel_gt_target = torch.from_numpy(mel_gt_target)
 
-        buffer.append({"text": character, "duration": duration,
+        buffer.append({"name": basename[i], "text": character, "duration": duration,
                        "mel_target": mel_gt_target})
 
     end = time.perf_counter()
@@ -58,6 +58,7 @@ class BufferDataset(Dataset):
 
 
 def reprocess_tensor(batch, cut_list):
+    names = [batch[ind]["name"] for ind in cut_list]
     texts = [batch[ind]["text"] for ind in cut_list]
     mel_targets = [batch[ind]["mel_target"] for ind in cut_list]
     durations = [batch[ind]["duration"] for ind in cut_list]
@@ -93,7 +94,10 @@ def reprocess_tensor(batch, cut_list):
            "duration": durations,
            "mel_pos": mel_pos,
            "src_pos": src_pos,
-           "mel_max_len": max_mel_len}
+           "mel_max_len": max_mel_len,
+           "mel_len": length_mel,
+           "src_len": length_text,
+           "name": names}
 
     return out
 

@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 
 from fastspeech1.model_fs import FastSpeech
 from fastspeech1.loss_fs import DNNLoss
+from fastspeech1.eval_fs import evaluate
 from dataset.dataset_fs import BufferDataset
 from dataset.dataset_fs import get_data_to_buffer, collate_fn_tensor
 from fastspeech1.optimizer_fs import ScheduledOptim
@@ -61,6 +62,10 @@ def main(args, device):
     # Init logger
     if not os.path.exists(hp.log_path):
         os.makedirs(hp.log_path)
+
+    waveglow = None
+    if hp.vocoder == 'waveglow':
+        waveglow = utils.get_waveglow()
 
     # Get dataset
     dataset = BufferDataset(buffer)
@@ -177,6 +182,22 @@ def main(args, device):
                     torch.save({'model': model.state_dict(), 'optimizer': optimizer.state_dict(
                     )}, os.path.join(hp.checkpoint_path, 'checkpoint_%d.pth.tar' % current_step))
                     print("save model at step %d ..." % current_step)
+
+                if current_step % hp.eval_step == 0:
+                    model.eval()
+                    with torch.no_grad():
+                        t_l, d_l, mel_l, mel_p_l = evaluate(
+                            model, current_step, vocoder=waveglow)
+
+                        str0 = 'Validating'
+                        str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
+                            epoch + 1, hp.epochs, current_step, total_step)
+                        str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f};".format(
+                            t_l, m_l, m_p_l, d_l)
+                        print(str0)
+                        print(str1)
+                        print(str2)
+                    model.train()
 
                 end_time = time.perf_counter()
                 Time = np.append(Time, end_time - start_time)

@@ -78,21 +78,29 @@ def evaluate(model, step, vocoder=None):
     # Get Loss
     fastspeech_loss = DNNLoss().to(device)
 
+    t_l = []
     d_l = []
     mel_l = []
     mel_p_l = []
+    idx = 0
+    current_step = 0
 
     for i, batchs in enumerate(validating_loader):
         # real batch start here
         for j, db in enumerate(batchs):
             start_time = time.perf_counter()
             # Get Data
+            id_ = db["name"]
             character = db["text"].long().to(device)
             mel_target = db["mel_target"].float().to(device)
             duration = db["duration"].int().to(device)
             mel_pos = db["mel_pos"].long().to(device)
             src_pos = db["src_pos"].long().to(device)
             max_mel_len = db["mel_max_len"]
+            src_len = torch.from_numpy(
+                db["src_len"]).long().to(device)
+            mel_len = torch.from_numpy(
+                db["mel_len"]).long().to(device)
 
             with torch.no_grad():
                 # Forward
@@ -110,7 +118,63 @@ def evaluate(model, step, vocoder=None):
                                                                             duration)
                 total_loss = mel_loss + mel_postnet_loss + duration_loss
 
+                t_l.append(total_loss.item())
                 d_l.append(duration_loss.item())
                 mel_l.append(mel_loss.item())
                 mel_p_l.append(mel_postnet_loss.item())
+
+                if vocoder is not None:
+                    # Run vocoding and plotting spectrogram only when the vocoder is defined
+                    for k in range(len(mel_target)):
+                        basename = id_[k]
+                        gt_length = mel_len[k]
+                        # out_length = out_mel_len[k]
+                        mel_target_torch = mel_target[k:k + 1,
+                                           :gt_length].transpose(1, 2).detach()
+                        # mel_target_ = mel_target[k, :gt_length].cpu(
+                        # ).transpose(0, 1).detach()
+
+                        mel_postnet_torch = mel_postnet_output[k:k +
+                                                                 1, :].transpose(1, 2).detach()
+                        mel_postnet = mel_postnet_output[k, :].cpu(
+                        ).transpose(0, 1).detach()
+
+                        if hp.vocoder == 'waveglow':
+                            utils.waveglow_infer(mel_target_torch, vocoder, os.path.join(
+                                hp.eval_path, 'ground-truth_{}_{}.wav'.format(basename, hp.vocoder)))
+                            utils.waveglow_infer(mel_postnet_torch, vocoder, os.path.join(
+                                hp.eval_path, 'eval_{}_{}.wav'.format(basename, hp.vocoder)))
+
+                        np.save(os.path.join(hp.eval_path, 'eval_{}_mel.npy'.format(
+                            basename)), mel_postnet.numpy())
+                        idx += 1
+
+            current_step += 1
+
+    t_l = sum(t_l) / len(t_l)
+    d_l = sum(d_l) / len(d_l)
+    mel_l = sum(mel_l) / len(mel_l)
+    mel_p_l = sum(mel_p_l) / len(mel_p_l)
+
+    str1 = "FastSpeech2 Step {},".format(step)
+    str2 = "Total Loss {},".format(t_l)
+    str3 = "Duration Loss: {}".format(d_l)
+    str4 = "Mel Loss: {}".format(mel_l)
+    str5 = "Mel Postnet Loss: {}".format(mel_p_l)
+
+    print("\n" + str1)
+    print(str2)
+    print(str3)
+    print(str4)
+    print(str5)
+
+    with open(os.path.join(hp.log_path, "eval.txt"), "a") as f_log:
+        f_log.write(str1 + "\n")
+        f_log.write(str2 + "\n")
+        f_log.write(str3 + "\n")
+        f_log.write(str4 + "\n")
+        f_log.write(str5 + "\n")
+        f_log.write("\n")
+
+    return t_l, d_l, mel_l, mel_p_l
 
