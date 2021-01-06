@@ -35,7 +35,7 @@ class Encoder(nn.Module):
     ''' Encoder '''
 
     def __init__(self,
-                 n_src_vocab=len(symbols)+1,
+                 n_src_vocab=236,
                  len_max_seq=hp.max_seq_len,
                  d_word_vec=hp2.encoder_hidden,
                  n_layers=hp2.encoder_layer,
