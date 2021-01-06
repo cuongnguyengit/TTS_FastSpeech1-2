@@ -68,7 +68,8 @@ def main(args, device):
         model.load_state_dict(checkpoint['model'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         print("\n---Model Restored at Step {}---\n".format(args.restore_step))
-    except:
+    except Exception as e:
+        print(e)
         print("\n---Start New Training---\n")
         checkpoint_path = os.path.join(hp.checkpoint_path)
         if not os.path.exists(checkpoint_path):
