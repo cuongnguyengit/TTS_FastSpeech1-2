@@ -35,7 +35,7 @@ class Encoder(nn.Module):
     ''' Encoder '''
 
     def __init__(self,
-                 n_src_vocab=236,
+                 n_src_vocab=len(symbols)+1,
                  len_max_seq=hp.max_seq_len,
                  d_word_vec=hp2.encoder_hidden,
                  n_layers=hp2.encoder_layer,
@@ -51,7 +51,7 @@ class Encoder(nn.Module):
         n_position = len_max_seq + 1
 
         self.src_word_emb = nn.Embedding(
-            n_src_vocab, d_word_vec, padding_idx=Constants.PAD)
+            236, d_word_vec, padding_idx=Constants.PAD)
         self.position_enc = nn.Parameter(
             get_sinusoid_encoding_table(n_position, d_word_vec).unsqueeze(0), requires_grad=False)
 
