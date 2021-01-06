@@ -65,8 +65,20 @@ def main(args, device):
     try:
         checkpoint = torch.load(os.path.join(
             checkpoint_path, 'checkpoint_{}.pth.tar'.format(args.restore_step)))
-        model.load_state_dict(checkpoint['model'])
-        optimizer.load_state_dict(checkpoint['optimizer'])
+        if 'LJSeech' in checkpoint_path:
+            pretrained_dict = checkpoint['model']
+            model_dict = model.state_dict()
+            for k, v in pretrained_dict.items():
+                print(k)
+            # 1. filter out unnecessary keys
+            pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+            # 2. overwrite entries in the existing state dict
+            model_dict.update(pretrained_dict)
+            # 3. load the new state dict
+            model.load_state_dict(model_dict)
+        else:
+            model.load_state_dict(checkpoint['model'])
+            optimizer.load_state_dict(checkpoint['optimizer'])
         print("\n---Model Restored at Step {}---\n".format(args.restore_step))
     except Exception as e:
         print(e)
