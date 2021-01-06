@@ -938,7 +938,6 @@ diệp d1 ie2_T6 p
 diết d1 ie2_T3 t
 diệt d1 ie2_T6 t
 diều d1 ieu_T2 
-diễu d1 ieu_T5 
 diệu d1 ieu_T6 
 do d1 o1_T1 
 doa d1 oa_T1 
@@ -2192,7 +2191,6 @@ liệng l ie2_T6 ng
 liếp l ie2_T3 p
 liệt l ie2_T6 t
 liều l ieu_T2 
-liễu l ieu_T5 
 liệu l ieu_T6 
 lo l o1_T1 
 loa l oa_T1 
@@ -2600,7 +2598,6 @@ miết m ie2_T3 t
 miệt m ie2_T6 t
 miếu m ieu_T3 
 miều m ieu_T2 
-miễu m ieu_T5 
 mo m o1_T1 
 moi m oi_T1 
 mom m o1_T1 m
@@ -3188,7 +3185,6 @@ nhiễn nh ie2_T5 n
 nhiếp nh ie2_T3 p
 nhiệt nh ie2_T6 t
 nhiều nh ieu_T2 
-nhiễu nh ieu_T5 
 nho nh o1_T1 
 nhoai nh oa_T1 i_T1 
 nhoam nh oa_T1 m
@@ -4891,7 +4887,6 @@ tiệt t ie2_T6 t
 tiếu t ieu_T3 
 tiều t ieu_T2 
 tiểu t ieu_T4 
-tiễu t ieu_T5 
 to t o1_T1 
 toa t oa_T1 
 toan t oa_T1 n
