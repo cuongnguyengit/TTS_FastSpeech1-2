@@ -85,6 +85,9 @@ dict_nsp = {
     'oải': 'oa_T4 i_T1',
     'oãi': 'oa_T5 i_T1',
     'oại': 'oa_T6 i_T1',
+    'iễu': 'i_T1 eu2_T5',
+    'uồi': 'ua2_T2 i_T1',
+    'ượi': 'ua2_T6 i_T1',
 }
 
 list_am = []

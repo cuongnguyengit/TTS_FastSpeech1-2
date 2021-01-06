@@ -6,9 +6,12 @@ class G2p:
     def __init__(self, path_dict):
         self.dict_word_char = defaultdict(list)
         self.dict_w2p = {}
+        list_unuse = ['ieu_T5', 'uoi2_T2', 'uoi3_T6']
         with open(path_dict, 'r', encoding='utf8') as rf:
             lines = rf.read().split('\n')
             for line in lines:
+                if line in list_unuse:
+                    continue
                 temp = line.split()
                 word = temp[0]
                 phonme = ' '.join(temp[1:])
