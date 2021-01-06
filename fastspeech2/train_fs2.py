@@ -96,10 +96,11 @@ def main(args, device):
     Start = time.perf_counter()
 
     # Training
+    current_step = args.restore_step
     model = model.train()
     for epoch in range(hp.epochs):
         # Get Training Loader
-        total_step = hp.epochs * len(loader) * hp.batch_size
+        total_step = current_step + (hp.epochs - epoch) * len(loader) * hp.batch_size
 
         for i, batchs in enumerate(loader):
             for j, data_of_batch in enumerate(batchs):
