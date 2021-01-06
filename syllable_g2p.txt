@@ -421,7 +421,6 @@ chuốc ch ua2_T3 k
 chuộc ch ua2_T6 k
 chuệch ch u1_T1 e2_T6 ch
 chuối ch uoi2_T3 
-chuồi ch uoi2_T2 
 chuỗi ch uoi2_T5 
 chuội ch uoi2_T6 
 chuẩn ch ua2_T4 n
@@ -2613,7 +2612,6 @@ mung m u1_T1 ng
 muôn m ua2_T1 n
 muông m ua2_T1 ng
 muối m uoi2_T3 
-muồi m uoi2_T2 
 muỗi m uoi2_T5 
 muội m uoi2_T6 
 muỗm m ua2_T5 m
@@ -4061,7 +4059,6 @@ run r u1_T1 n
 rung r u1_T1 ng
 ruy r uy_T1 
 ruốc r ua2_T3 k
-ruồi r uoi2_T2 
 ruổi r uoi2_T4 
 ruồng r ua2_T2 ng
 ruỗng r ua2_T5 ng
@@ -4289,7 +4286,6 @@ rưới r uoi3_T3
 rười r uoi3_T2 
 rưởi r uoi3_T4 
 rưỡi r uoi3_T5 
-rượi r uoi3_T6 
 rướm r ua2_T3 m
 rườm r ua2_T2 m
 rươn r ua2_T1 n
@@ -5166,7 +5162,6 @@ tuốc t ua2_T3 k
 tuộc t ua2_T6 k
 tuếch t u1_T1 e2_T3 ch
 tuệch t u1_T1 e2_T6 ch
-tuồi t uoi2_T2 
 tuổi t uoi2_T4 
 tuấn t ua2_T3 n
 tuần t ua2_T2 n
