@@ -65,7 +65,7 @@ def main(args, device):
     try:
         checkpoint = torch.load(os.path.join(
             checkpoint_path, 'checkpoint_{}.pth.tar'.format(args.restore_step)))
-        if 'LJSeech' in checkpoint_path:
+        if 'LJSpeech' in checkpoint_path:
             pretrained_dict = checkpoint['model']
             model_dict = model.state_dict()
             for k, v in pretrained_dict.items():
