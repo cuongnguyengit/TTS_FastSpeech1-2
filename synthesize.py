@@ -13,25 +13,28 @@ from string import punctuation
 from G2p import G2p
 from time import time
 import re
+from evaluating_sentence import EvalMeanFrequencyScore
+ev = EvalMeanFrequencyScore()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
-def preprocess(text):
+def preprocess(text, g2p):
     text = text.rstrip(punctuation).lower()
+    score = ev.cal(text)
     print(text)
-    g2p = G2p(args.dict_path)
     phone = g2p.g2p(text)
     # phone = list(filter(lambda p: p != ' ', phone))
-    print(phone)
+    # print(phone)
+    
     phone = '{' + '}{'.join(phone.split()) + '}'
     phone = re.sub(r'\{[^\w\s]?\}', '{sp}', phone)
     phone = phone.replace('}{', ' ')
-    print('|' + phone + '|')
+    # print('|' + phone + '|')
     sequence = np.array(text_to_sequence(phone, hp.text_cleaners))
-    print(sequence_to_text(sequence))
-    print(sequence)
+    # print(sequence_to_text(sequence))
+    # print(sequence)
     sequence = np.stack([sequence])
-    return torch.from_numpy(sequence).long().to(device)
+    return torch.from_numpy(sequence).long().to(device), score
 
 
 def get_FastSpeech2(args):
@@ -96,8 +99,11 @@ if __name__ == "__main__":
     parser.add_argument('--energy_control', type=float, default=1.0)
 
     args = parser.parse_args()
+
+    g2p = G2p(args.dict_path)
+
     sentences = []
-    if args.sent == '?':
+    if args.sent != '?':
         sentences.append(args.sent)
     else:
         with open(args.path, 'r', encoding='utf-8') as rf:
@@ -110,11 +116,12 @@ if __name__ == "__main__":
     # waveglow = None
     with torch.no_grad():
         for idx, sentence in enumerate(sentences):
-            text = preprocess(sentence)
+            text, score = preprocess(sentence, g2p)
+            name = str(idx) + '_' + str(score)
             print(text.shape)
-            synthesize(model, waveglow, text, idx, 'step_{}'.format(
+            synthesize(model, waveglow, text, name, 'step_{}'.format(
                 args.step), args.duration_control, args.pitch_control, args.energy_control)
-            gen_mel(model, text, idx, args.duration_control, args.pitch_control, args.energy_control)
+            gen_mel(model, text, name, args.duration_control, args.pitch_control, args.energy_control)
             print('DONE', idx)
 
     # print(text_to_sequence('{o2_T1 l e2_T1 sp k o1_T3 t ie2_T3 ng ng uoi3_T2 sp n oi_T3}', ['basic_cleaners']))

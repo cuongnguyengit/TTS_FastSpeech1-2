@@ -63,15 +63,22 @@ class EvalMeanFrequencyScore:
     def cal(self, sentence):
         total = 0
         list_word = sentence.split()
+        dem1 = 0
+        dem2 = 0
+        dem3 = 0
         for word in list_word:
             if word in self.list_h_word:
                 # print('1', end=' ; ')
                 total += 3
+                dem1 += 1
             elif word in self.list_l_word:
                 # print('-1', end=' ; ')
                 total += 0.5
+                dem2 += 1
             else:
                 total += 1.5
+                dem3 += 1
+        print(dem1, dem2, dem3)
         return 1.0 * total / len(list_word) / 3
 
 eval = EvalMeanFrequencyScore()

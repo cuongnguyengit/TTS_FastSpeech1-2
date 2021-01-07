@@ -10,7 +10,12 @@ class G2p:
         with open(path_dict, 'r', encoding='utf8') as rf:
             lines = rf.read().split('\n')
             for line in lines:
-                if line in list_unuse:
+                check = True
+                for i in list_unuse:
+                    if i in line:
+                        check = False
+                        break
+                if not check:
                     continue
                 temp = line.split()
                 word = temp[0]
