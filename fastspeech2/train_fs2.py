@@ -229,7 +229,7 @@ def main(args, device):
 
                 if current_step % hp.save_step == 0:
                     torch.save({'model': model.state_dict(), 'optimizer': optimizer.state_dict(
-                    )}, os.path.join(checkpoint_path, 'checkpoint_{}.pth.tar'.format(current_step)))
+                    )}, os.path.join(hp.checkpoint_path, 'checkpoint_{}.pth.tar'.format(current_step)))
                     print("save model at step {} ...".format(current_step))
 
                 if current_step % hp.synth_step == 0:
