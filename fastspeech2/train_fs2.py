@@ -32,6 +32,18 @@ def main(args, device):
     hp.log_path = os.path.join(hp.root_path, args.name_task, "log", hp.dataset)
     hp.test_path = os.path.join(hp.root_path, args.name_task, 'results')
 
+    if not os.path.exists(hp.checkpoint_path):
+        os.makedirs(hp.checkpoint_path)
+    if not os.path.exists(hp.synth_path):
+        os.makedirs(hp.synth_path)
+    if not os.path.exists(hp.eval_path):
+        os.makedirs(hp.eval_path)
+    if not os.path.exists(hp.log_path):
+        os.makedirs(hp.log_path)
+    if not os.path.exists(hp.test_path):
+        os.makedirs(hp.test_path)
+
+
     list_unuse = []
 
     # Get device
