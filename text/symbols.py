@@ -10,11 +10,12 @@ _pad        = '_'
 _punctuation = '!\'(),.:;? '
 _special = '-'
 # _letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-# _letters  = '0123456789aáảàãạâấẩầẫậăắẳằẵặbcdđeéẻèẽẹêếểềễệfghiíỉìĩịjklmnoóỏòõọôốổồỗộơớởờỡợpqrstuúủùũụưứửừữựvwxyýỷỳỹỵz'
+_letters  = '@aáảàãạâấẩầẫậăắẳằẵặbcdđeéẻèẽẹêếểềễệfghiíỉìĩịjklmnoóỏòõọôốổồỗộơớởờỡợpqrstuúủùũụưứửừữựvwxyýỷỳỹỵz'
 _silences = ['@sp', '@spn', '@sil']
 
 # Prepend "@" to ARPAbet symbols to ensure uniqueness (some are the same as uppercase letters):
-_arpabet = ['@' + s for s in cmudict.valid_symbols]
+# _arpabet = ['@' + s for s in cmudict.valid_symbols]
+_arpabet = []
 # _arpabet = ['@' + s for s in cmudict._valid_symbol_set]
 
 # Export all symbols:

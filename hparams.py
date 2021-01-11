@@ -5,8 +5,8 @@ data_path = '/content/vlsp2020/'
 name_task = 'FastSpeech2'  # 'FastSpeech2'
 waveglow_path = '/content/drive/MyDrive/voice_data/waveglow_78000'
 # Text
-# text_cleaners = ['basic_cleaners']
-text_cleaners = []
+text_cleaners = ['basic_cleaners']
+# text_cleaners = []
 
 root_path = '/content/drive/MyDrive/voice_data/'
 
