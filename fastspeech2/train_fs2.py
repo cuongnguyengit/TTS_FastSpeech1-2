@@ -20,6 +20,10 @@ import hparams as hp
 
 import utils
 # import audio as Audio
+from datetime import datetime
+import pytz
+UTC = pytz.utc
+timeZ_Kl = pytz.timezone('Asia/Bangkok')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -79,9 +83,18 @@ def main(args, device):
             checkpoint_path, 'checkpoint_{}.pth.tar'.format(args.restore_step)))
         if 'LJSpeech' in checkpoint_path:
             pretrained_dict = checkpoint['model']
+            dem1 = 0
+            dem2 = 0
             model_dict = model.state_dict()
             for k, v in pretrained_dict.items():
-                print(k)
+                if k in model_dict and v.size() == model_dict[k].size():
+                    # print('Load weight in ', k)
+                    dem1 += 1
+                else:
+                    print(f'Module {k} is not same size')
+                    dem2 += 1
+            dem2 += dem1
+            print('### Load {dem1} \/ {dem2} modules')
             # 1. filter out unnecessary keys
             pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict and v.size() == model_dict[k].size()}
             # 2. overwrite entries in the existing state dict
@@ -204,8 +217,8 @@ def main(args, device):
                 # Print
                 if current_step % hp.log_step == 0:
                     Now = time.perf_counter()
-
-                    str0 = 'Training:'
+                    dt_Kl = datetime.now(timeZ_Kl)
+                    str0 = 'Training: {dt_Kl}'
 
                     str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
                         epoch+1, hp.epochs, current_step, total_step)
@@ -293,7 +306,8 @@ def main(args, device):
                         d_l, f_l, e_l, m_l, m_p_l = evaluate(
                             model, current_step)
                         t_l = d_l + f_l + e_l + m_l + m_p_l
-                        str0 = 'Validating'
+                        dt_Kl = datetime.now(timeZ_Kl)
+                        str0 = 'Validating: {dt_KL}'
                         str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
                             epoch + 1, hp.epochs, current_step, total_step)
                         str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
