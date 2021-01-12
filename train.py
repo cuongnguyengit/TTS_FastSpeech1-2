@@ -16,6 +16,7 @@ def run(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--list_freeze', type=list, default=[])
     parser.add_argument('--restore_step', type=int, default=0)
     parser.add_argument('--restore_path', type=str, default='')
     parser.add_argument('--model', type=str, default='FastSpeech2')

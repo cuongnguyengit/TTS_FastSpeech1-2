@@ -112,6 +112,21 @@ def main(args, device):
         if not os.path.exists(checkpoint_path):
             os.makedirs(checkpoint_path)
 
+    for i in args.list_freeze:
+        module = getattr(model, i)
+        module.weight.requires_grad = False
+        module.requires_grad = False
+
+    if len(args.list_freeze) > 0:
+        optimizer = torch.optim.Adam(
+            filter(lambda p: p.requires_grad, model.parameters()),
+            betas=hp2.betas,
+            eps=hp2.eps,
+            weight_decay=hp2.weight_decay)
+        scheduled_optim = ScheduledOptim(
+            optimizer, hp2.decoder_hidden,
+            hp2.n_warm_up_step, args.restore_step)
+
     # Load vocoder
     if hp.vocoder == 'waveglow':
         waveglow = utils.get_waveglow()
