@@ -233,7 +233,7 @@ def main(args, device):
                 if current_step % hp.log_step == 0:
                     Now = time.perf_counter()
                     dt_Kl = datetime.now(timeZ_Kl)
-                    str0 = 'Training: {dt_Kl}'
+                    str0 = f'Training: {dt_Kl}'
 
                     str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
                         epoch+1, hp.epochs, current_step, total_step)
@@ -322,7 +322,7 @@ def main(args, device):
                             model, current_step)
                         t_l = d_l + f_l + e_l + m_l + m_p_l
                         dt_Kl = datetime.now(timeZ_Kl)
-                        str0 = 'Validating: {dt_KL}'
+                        str0 = f'Validating: {dt_Kl}'
                         str1 = "\tEpoch [{}/{}], Step [{}/{}]:".format(
                             epoch + 1, hp.epochs, current_step, total_step)
                         str2 = "\tTotal Loss: {:.4f}, Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Duration Loss: {:.4f}, F0 Loss: {:.4f}, Energy Loss: {:.4f};".format(
